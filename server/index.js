@@ -23,6 +23,7 @@ app.use('/api/cart', require('./routes/cart.routes'));
 app.use('/api/wishlist', require('./routes/wishlist.routes'));
 app.use('/api/orders', require('./routes/orders.routes'));
 app.use('/api/admin', require('./routes/admin.routes'));
+app.use('/api/setup', require('./routes/setup.routes'));
 
 /* ─── SERVE STATIC FILES ─────────────────── */
 // Admin dashboard at /admin
