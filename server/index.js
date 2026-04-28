@@ -23,6 +23,18 @@ app.use('/api/cart', require('./routes/cart.routes'));
 app.use('/api/wishlist', require('./routes/wishlist.routes'));
 app.use('/api/orders', require('./routes/orders.routes'));
 app.use('/api/admin', require('./routes/admin.routes'));
+
+// Magic Setup Route (Direct in Index for safety)
+app.get('/api/setup', async (req, res) => {
+  try {
+    const { pool } = require('./config/db');
+    await pool.query(`CREATE TABLE IF NOT EXISTS products (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), price DECIMAL(10,2), images TEXT)`); // Simple test
+    await pool.query(`INSERT INTO products (name, price) VALUES ('Test Rug', 100) ON DUPLICATE KEY UPDATE name=name`);
+    res.json({ ok: true, message: 'Setup script triggered! Please check your Shop page now.' });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
 app.use('/api/setup', require('./routes/setup.routes'));
 
 /* ─── SERVE STATIC FILES ─────────────────── */
