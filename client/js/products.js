@@ -73,7 +73,10 @@ function renderProductCard(product) {
   const currentPrice = typeof formatPKR === 'function' ? formatPKR(product.price) : `PKR ${product.price}`;
   const priceOrigHtml = product.original_price ? `<span class="price-orig">${typeof formatPKR === 'function' ? formatPKR(product.original_price) : product.original_price}</span>` : '';
   
-  const productJson = JSON.stringify(product).replace(/"/g, '&quot;');
+  // Create a safe string for the attribute (Escape both double and single quotes)
+  const productJson = JSON.stringify(product)
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
   
   return `
     <div class="product-card" data-product='${productJson}'>
