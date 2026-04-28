@@ -54,7 +54,19 @@ app.get('*splat', (req, res) => {
 /* ─── START SERVER ───────────────────────── */
 async function start() {
   await testConnection();
-  app.listen(PORT, () => {
+  // Auto-Setup on Start
+(async () => {
+  try {
+    const { pool } = require('./config/db');
+    console.log("🛠️ Running Auto-Setup...");
+    await pool.query(`CREATE TABLE IF NOT EXISTS products (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), price DECIMAL(10,2), vendor VARCHAR(255), image_urls TEXT, is_active TINYINT DEFAULT 1, featured TINYINT DEFAULT 0, style VARCHAR(50), size VARCHAR(50), color VARCHAR(50))`);
+    console.log("✅ Auto-Setup Complete!");
+  } catch (err) {
+    console.error("❌ Auto-Setup Failed:", err.message);
+  }
+})();
+
+app.listen(PORT, () => {
     console.log(`\n✦ Veloura Rugs server running on http://localhost:${PORT}`);
     console.log(`  ├─ Storefront: http://localhost:${PORT}`);
     console.log(`  ├─ Admin:      http://localhost:${PORT}/admin`);
