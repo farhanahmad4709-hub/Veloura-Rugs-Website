@@ -49,4 +49,10 @@ async function start() {
   });
 }
 
-start();
+// Export for Vercel
+module.exports = app;
+
+// Only start if run directly
+if (require.main === module) {
+  start();
+}
