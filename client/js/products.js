@@ -56,9 +56,11 @@ function formatPKR(val) {
  * @returns {String} HTML string
  */
 function renderProductCard(product) {
-  const primaryImg = product.images && product.images.length > 0 ? product.images[0] : 'image/placeholder.jpg';
+  if (!product) return '';
+  const images = Array.isArray(product.images) ? product.images : [];
+  const primaryImg = images.length > 0 ? images[0] : 'image/placeholder.jpg';
   const badgeHtml = product.badge ? `<span class="product-badge">${product.badge}</span>` : '';
-  const priceOrigHtml = product.original_price ? `<span class="price-orig">${formatPKR(product.original_price)}</span>` : '';
+  const priceOrigHtml = product.original_price ? `<span class="price-orig">${typeof formatPKR === 'function' ? formatPKR(product.original_price) : product.original_price}</span>` : '';
   
   // Create a safe string for the attribute
   const productJson = JSON.stringify(product).replace(/"/g, '&quot;');
