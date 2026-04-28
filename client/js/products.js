@@ -57,19 +57,29 @@ function formatPKR(val) {
  */
 function renderProductCard(product) {
   if (!product) return '';
-  const images = Array.isArray(product.images) ? product.images : [];
+  
+  // Handle backend image_urls (string) vs local images (array)
+  let images = [];
+  if (product.image_urls) {
+    images = product.image_urls.split(',');
+  } else if (Array.isArray(product.images)) {
+    images = product.images;
+  }
+  
   const primaryImg = images.length > 0 ? images[0] : 'image/placeholder.jpg';
   const badgeHtml = product.badge ? `<span class="product-badge">${product.badge}</span>` : '';
+  
+  // Format Prices Safely
+  const currentPrice = typeof formatPKR === 'function' ? formatPKR(product.price) : `PKR ${product.price}`;
   const priceOrigHtml = product.original_price ? `<span class="price-orig">${typeof formatPKR === 'function' ? formatPKR(product.original_price) : product.original_price}</span>` : '';
   
-  // Create a safe string for the attribute
   const productJson = JSON.stringify(product).replace(/"/g, '&quot;');
   
   return `
     <div class="product-card" data-product='${productJson}'>
       <div class="product-image">
         ${badgeHtml}
-        <img src="${primaryImg}" alt="${product.name}" loading="lazy">
+        <img src="${primaryImg}" alt="${product.name}" loading="lazy" onerror="this.src='image/placeholder.jpg'">
         <div class="product-actions">
           <button class="action-btn" onclick="handleCartAdd(this)" title="Add to Cart">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
@@ -83,7 +93,7 @@ function renderProductCard(product) {
         <p class="product-vendor">${product.vendor || 'Veloura Rugs'}</p>
         <h3 class="product-title"><a href="product.html?id=${product.id}">${product.name}</a></h3>
         <div class="product-price">
-          <span class="price-current">${formatPKR(product.price)}</span>
+          <span class="price-current">${currentPrice}</span>
           ${priceOrigHtml}
         </div>
       </div>
