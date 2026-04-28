@@ -6,12 +6,19 @@ require('dotenv').config();
 
 console.log(`🔌 Attempting DB Connection to: ${process.env.DB_HOST} on port ${process.env.DB_PORT}`);
 
+console.log("🔍 Checking Environment Variables...");
+if (process.env.DATABASE_URL) {
+  console.log(`✅ DATABASE_URL found (Length: ${process.env.DATABASE_URL.length})`);
+} else {
+  console.warn("⚠️ DATABASE_URL IS MISSING! Falling back to individual vars.");
+}
+
 const poolConfig = process.env.DATABASE_URL 
   ? { uri: process.env.DATABASE_URL }
   : {
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
+      host: process.env.DB_HOST || 'localhost',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
       database: process.env.DB_NAME || 'defaultdb',
       port: parseInt(process.env.DB_PORT) || 3306,
     };
