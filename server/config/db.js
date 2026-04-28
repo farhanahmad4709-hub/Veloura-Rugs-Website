@@ -7,28 +7,29 @@ require('dotenv').config();
 console.log(`🔌 Attempting DB Connection to: ${process.env.DB_HOST} on port ${process.env.DB_PORT}`);
 
 const pool = mysql.createPool({
-  uri: process.env.DATABASE_URL,
   host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT) || 21353,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME || 'defaultdb',
+  port: parseInt(process.env.DB_PORT) || 3306,
+  ssl: {
+    rejectUnauthorized: false
+  },
   waitForConnections: true,
   connectionLimit: 5,
-  queueLimit: 0,
-  connectTimeout: 15000, // 15 seconds
-  ssl: { rejectUnauthorized: false }
+  connectTimeout: 10000 
 });
 
-// Test connection on startup
+console.log(`📡 Connecting to DB: ${process.env.DB_HOST}`);
+
+// Test connection
 async function testConnection() {
   try {
     const conn = await pool.getConnection();
-    console.log('✅ MySQL connected successfully');
+    console.log('✅ DB Connected');
     conn.release();
   } catch (err) {
-    console.error('❌ MySQL connection failed but continuing:', err.message);
-    // Don't exit process, let server try to handle requests or setup
+    console.error('❌ DB Fail:', err.message);
   }
 }
 
