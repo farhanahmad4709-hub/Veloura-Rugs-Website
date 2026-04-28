@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products — Veloura Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h2>Veloura Rugs</h2>
+        <span>Admin Panel</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html"><span class="icon">📊</span> <span>Dashboard</span></a>
+        <a href="products.html" class="active"><span class="icon">📦</span> <span>Products</span></a>
+        <a href="orders.html"><span class="icon">🛒</span> <span>Orders</span></a>
+        <a href="users.html"><span class="icon">👥</span> <span>Users</span></a>
+        <a href="messages.html"><span class="icon">✉️</span> <span>Messages</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" onclick="AdminAPI.logout()">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="top-bar">
+        <h1>Product Management</h1>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="openModal()">+ Add Product</button>
+          <button class="btn btn-outline" onclick="AdminAPI.exportCSV('products')">Export CSV</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" id="productSearch" placeholder="Search products..." oninput="filterProducts()">
+        <select id="stockFilter" onchange="filterProducts()">
+          <option value="">All Stock Status</option>
+          <option value="low">Low Stock (≤ 3)</option>
+          <option value="out">Out of Stock</option>
+        </select>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Size / Style</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productsTable">
+            <!-- Data loaded via JS -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- PRODUCT MODAL -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal">
+      <h2 id="modalTitle">Add New Product</h2>
+      <form id="productForm">
+        <input type="hidden" id="editId">
+        <div class="form-group">
+          <label>Product Name</label>
+          <input type="text" id="pName" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Price (PKR)</label>
+            <input type="number" id="pPrice" required>
+          </div>
+          <div class="form-group">
+            <label>Original Price (PKR)</label>
+            <input type="number" id="pOrigPrice" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Stock Quantity</label>
+            <input type="number" id="pStock" required>
+          </div>
+          <div class="form-group">
+            <label>Discount (%)</label>
+            <input type="number" id="pDiscount" value="0">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Size</label>
+            <select id="pSize">
+              <option value="3x5">3x5</option>
+              <option value="4x6">4x6</option>
+              <option value="5x8">5x8</option>
+              <option value="6x9">6x9</option>
+              <option value="7x10">7x10</option>
+              <option value="8x10">8x10</option>
+              <option value="9x12">9x12</option>
+              <option value="10x13">10x13</option>
+              <option value="12x15">12x15</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Style</label>
+            <input type="text" id="pStyle" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Color</label>
+          <input type="text" id="pColor" required>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="pDesc" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Image URLs (Comma separated)</label>
+          <textarea id="pImages" rows="2" placeholder="https://image1.jpg, https://image2.jpg"></textarea>
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" id="pFeatured"> Featured Product</label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/admin-api.js"></script>
+  <script>
+    if (!AdminAPI.checkAuth()) {}
+
+    let allProducts = [];
+
+    async function loadProducts() {
+      const res = await AdminAPI.getProducts();
+      if (res && res.ok && Array.isArray(res.data)) {
+        allProducts = res.data;
+        displayProducts(allProducts);
+      }
+    }
+
+    function displayProducts(products) {
+      const table = document.getElementById('productsTable');
+      table.innerHTML = products.map(p => `
+        <tr>
+          <td>${p.id}</td>
+          <td><strong>${p.name}</strong><br><small style="color:var(--muted)">${p.style} | ${p.color}</small></td>
+          <td>${formatPKR(p.price)}</td>
+          <td>${p.size}</td>
+          <td>
+            <span class="badge ${p.stock <= 3 ? 'badge-low' : 'badge-ok'}">
+              ${p.stock === 0 ? 'Out of Stock' : p.stock + ' in stock'}
+            </span>
+          </td>
+          <td>
+            <span class="badge ${p.is_active ? 'badge-confirmed' : 'badge-cancelled'}">
+              ${p.is_active ? 'Active' : 'Inactive'}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-outline" onclick="editProduct(${p.id})">Edit</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterProducts() {
+      const search = document.getElementById('productSearch').value.toLowerCase();
+      const stock = document.getElementById('stockFilter').value;
+      
+      let filtered = allProducts.filter(p => 
+        p.name.toLowerCase().includes(search) || 
+        p.style.toLowerCase().includes(search) ||
+        p.color.toLowerCase().includes(search)
+      );
+
+      if (stock === 'low') filtered = filtered.filter(p => p.stock > 0 && p.stock <= 3);
+      if (stock === 'out') filtered = filtered.filter(p => p.stock === 0);
+
+      displayProducts(filtered);
+    }
+
+    function openModal(editData = null) {
+      const modal = document.getElementById('productModal');
+      const form = document.getElementById('productForm');
+      const title = document.getElementById('modalTitle');
+      
+      form.reset();
+      document.getElementById('editId').value = '';
+
+      if (editData) {
+        title.textContent = 'Edit Product';
+        document.getElementById('editId').value = editData.id;
+        document.getElementById('pName').value = editData.name;
+        document.getElementById('pPrice').value = editData.price;
+        document.getElementById('pOrigPrice').value = editData.original_price;
+        document.getElementById('pStock').value = editData.stock;
+        document.getElementById('pDiscount').value = editData.discount;
+        document.getElementById('pSize').value = editData.size;
+        document.getElementById('pStyle').value = editData.style;
+        document.getElementById('pColor').value = editData.color;
+        document.getElementById('pDesc').value = editData.description;
+        document.getElementById('pFeatured').checked = editData.featured;
+        document.getElementById('pStock').value = editData.stock;
+        
+        // Fetch current images to populate the input
+        fetch(`/api/products/${editData.id}`)
+          .then(res => res.json())
+          .then(res => {
+            if (res.ok && res.data.images) {
+              document.getElementById('pImages').value = res.data.images.join(', ');
+            }
+          });
+      } else {
+        title.textContent = 'Add New Product';
+        document.getElementById('pImages').value = '';
+      }
+
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('productModal').classList.remove('active');
+    }
+
+    async function editProduct(id) {
+      const p = allProducts.find(prod => prod.id === id);
+      if (p) openModal(p);
+    }
+
+    document.getElementById('productForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('editId').value;
+      const imageUrls = document.getElementById('pImages').value.split(',').map(s => s.trim()).filter(s => s);
+      
+      const data = {
+        name: document.getElementById('pName').value,
+        price: parseFloat(document.getElementById('pPrice').value),
+        original_price: parseFloat(document.getElementById('pOrigPrice').value),
+        stock: parseInt(document.getElementById('pStock').value),
+        discount: parseInt(document.getElementById('pDiscount').value),
+        size: document.getElementById('pSize').value,
+        style: document.getElementById('pStyle').value,
+        color: document.getElementById('pColor').value,
+        description: document.getElementById('pDesc').value,
+        featured: document.getElementById('pFeatured').checked
+      };
+
+      // ONLY send images if they were modified/provided
+      if (imageUrls.length > 0) {
+        data.images = imageUrls;
+      }
+
+      let res;
+      if (id) {
+        res = await AdminAPI.updateProduct(id, data);
+      } else {
+        res = await AdminAPI.createProduct(data);
+      }
+
+      if (res && res.ok) {
+        showToast(id ? 'Product updated!' : 'Product created!', 'success');
+        closeModal();
+        loadProducts();
+      } else {
+        showToast('Error saving product', 'error');
+      }
+    };
+
+    window.onload = loadProducts;
+  </script>
+</body>
+</html>

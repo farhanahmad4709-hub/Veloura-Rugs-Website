@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Veloura Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h2>Veloura Rugs</h2>
+        <span>Admin Panel</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="active"><span class="icon">📊</span> <span>Dashboard</span></a>
+        <a href="products.html"><span class="icon">📦</span> <span>Products</span></a>
+        <a href="orders.html"><span class="icon">🛒</span> <span>Orders</span></a>
+        <a href="users.html"><span class="icon">👥</span> <span>Users</span></a>
+        <a href="messages.html"><span class="icon">✉️</span> <span>Messages</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" onclick="AdminAPI.logout()">Logout</a>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+      <div class="top-bar">
+        <h1>Dashboard Overview</h1>
+        <div class="actions">
+          <button class="btn btn-outline" onclick="exportData()">
+            <span>📥</span> Export Report
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI GRID -->
+      <div class="kpi-grid" id="kpiGrid">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Revenue</div>
+          <div class="kpi-value" id="totalRevenue">PKR 0</div>
+          <div class="kpi-sub">Lifetime earnings</div>
+        </div>
+        <div class="kpi-card info">
+          <div class="kpi-label">Total Orders</div>
+          <div class="kpi-value" id="totalOrders">0</div>
+          <div class="kpi-sub">All time</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Customers</div>
+          <div class="kpi-value" id="totalUsers">0</div>
+          <div class="kpi-sub">Registered accounts</div>
+        </div>
+        <div class="kpi-card warning" id="lowStockCard">
+          <div class="kpi-label">Low Stock</div>
+          <div class="kpi-value" id="lowStock">0</div>
+          <div class="kpi-sub">Items with ≤ 3 left</div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Revenue (Last 7 Days)</h3>
+          <canvas id="revenueChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Order Status</h3>
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+
+      <!-- RECENT ORDERS -->
+      <div class="table-card">
+        <div class="card-header">
+          <h3>Recent Orders</h3>
+          <a href="orders.html" class="btn btn-sm btn-outline">View All</a>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="recentOrdersTable">
+            <!-- Data loaded via JS -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/admin-api.js"></script>
+  <script>
+    if (!AdminAPI.checkAuth()) {}
+
+    let revenueChart, statusChart;
+
+    async function loadDashboard() {
+      const res = await AdminAPI.getDashboard();
+      if (!res || !res.ok) return;
+      const data = res.data;
+
+      // Update KPIs
+      document.getElementById('totalRevenue').textContent = formatPKR(data.kpis.totalRevenue);
+      document.getElementById('totalOrders').textContent = data.kpis.totalOrders;
+      document.getElementById('totalUsers').textContent = data.kpis.totalUsers;
+      document.getElementById('lowStock').textContent = data.kpis.lowStock;
+
+      if (data.kpis.lowStock > 0) {
+        document.getElementById('lowStockCard').classList.add('danger');
+      }
+
+      // Update Recent Orders
+      const table = document.getElementById('recentOrdersTable');
+      table.innerHTML = data.recentOrders.map(order => `
+        <tr>
+          <td><strong>${order.order_number}</strong></td>
+          <td>${new Date(order.created_at).toLocaleDateString()}</td>
+          <td>${order.shipping_name || 'Guest'}</td>
+          <td>${formatPKR(order.total)}</td>
+          <td><span class="badge badge-${order.status}">${order.status}</span></td>
+          <td><a href="orders.html?id=${order.id}" class="btn btn-sm btn-outline">View</a></td>
+        </tr>
+      `).join('');
+
+      initCharts(data);
+    }
+
+    function initCharts(data) {
+      // Revenue Chart
+      const revCtx = document.getElementById('revenueChart').getContext('2d');
+      if (revenueChart) revenueChart.destroy();
+      revenueChart = new Chart(revCtx, {
+        type: 'line',
+        data: {
+          labels: data.revenueDays.map(d => new Date(d.date).toLocaleDateString(undefined, {weekday: 'short'})),
+          datasets: [{
+            label: 'Revenue',
+            data: data.revenueDays.map(d => d.revenue),
+            borderColor: '#b8860b',
+            backgroundColor: 'rgba(184, 134, 11, 0.1)',
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      // Status Chart
+      const statusCtx = document.getElementById('statusChart').getContext('2d');
+      if (statusChart) statusChart.destroy();
+      statusChart = new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+          labels: data.statusBreakdown.map(s => s.status),
+          datasets: [{
+            data: data.statusBreakdown.map(s => s.count),
+            backgroundColor: ['#fef3c7', '#dbeafe', '#e0e7ff', '#cffafe', '#d1fae5', '#fee2e2']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+
+    function exportData() {
+      // Show simple choice or just export orders for now
+      AdminAPI.exportCSV('orders');
+    }
+
+    window.onload = loadDashboard;
+  </script>
+</body>
+</html>

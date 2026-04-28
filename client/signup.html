@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — Veloura Rugs</title>
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+
+<!-- BACKGROUND -->
+<div class="auth-bg"></div>
+
+<!-- PAGE -->
+<div class="auth-page">
+
+  <!-- ORNAMENT -->
+  <div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+  <!-- LOGO -->
+  <div class="auth-logo">
+    <a href="../index.html" class="logo">
+      <img src="../image/logo.png" alt="Veloura Rugs" style="height:56px;width:auto;object-fit:contain;display:block;margin:auto;" />
+      <span style="font-size:0.95rem;color:var(--ink);font-weight:700;margin-top:0.55rem;display:block;text-align:center;">Veloura Rugs</span>
+    </a>
+    <p>Artistry &amp; History in Every Knot</p>
+  </div>
+
+  <!-- CARD -->
+  <div class="auth-card">
+    <div class="auth-card-header">
+      <div class="gold-line"></div>
+      <h1>Create Account</h1>
+      <p>Join the Veloura family today</p>
+    </div>
+
+    <form id="signupForm" novalidate autocomplete="off">
+
+      <!-- FULL NAME -->
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input
+          type="text"
+          id="fullName"
+          placeholder="Your full name"
+          autocomplete="name"
+        />
+        <div class="field-msg hint" id="nameMsg"></div>
+      </div>
+
+      <!-- EMAIL -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+        />
+        <div class="field-msg hint" id="emailMsg"></div>
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <input
+            type="password"
+            id="password"
+            placeholder="Min 6 characters"
+            autocomplete="new-password"
+          />
+          <button type="button" class="toggle-pw" aria-label="Toggle password visibility">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+              <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+        <!-- STRENGTH BAR -->
+        <div class="pw-strength" id="pwStrength">
+          <div class="pw-strength-bar">
+            <div class="pw-strength-fill" id="pwStrengthFill"></div>
+          </div>
+          <span class="pw-strength-label" id="pwStrengthLabel"></span>
+        </div>
+        <div class="field-msg hint" id="pwMsg"></div>
+      </div>
+
+      <!-- CONFIRM PASSWORD -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <div class="input-wrap">
+          <input
+            type="password"
+            id="confirmPassword"
+            placeholder="Re-enter your password"
+            autocomplete="new-password"
+          />
+          <button type="button" class="toggle-pw" aria-label="Toggle confirm password visibility">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+              <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+        <div class="field-msg hint" id="cpwMsg"></div>
+      </div>
+
+      <!-- TERMS -->
+      <div class="form-row" style="margin-bottom:1.5rem;">
+        <label class="checkbox-label">
+          <input type="checkbox" id="agreeTerms" required />
+          I agree to the <a href="#" class="form-link" style="margin-left:.25rem;">Terms &amp; Privacy Policy</a>
+        </label>
+      </div>
+
+      <!-- SUBMIT -->
+      <button type="submit" class="btn-auth">Create My Account</button>
+
+    </form>
+
+    <!-- DIVIDER -->
+    <div class="auth-divider"><span>Already a member?</span></div>
+
+    <!-- FOOTER LINK -->
+    <div class="auth-footer-text">
+      Already have an account?
+      <a href="login.html">Sign in here</a>
+    </div>
+  </div>
+
+  <!-- TRUST BADGES -->
+  <div class="auth-trust">
+    <span class="trust-badge">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Secure &amp; Private
+    </span>
+    <span class="trust-badge">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      Free to Join
+    </span>
+    <span class="trust-badge">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      No Spam Ever
+    </span>
+  </div>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  // Extra: block submit if terms not checked
+  document.getElementById('signupForm').addEventListener('submit', function(e) {
+    const terms = document.getElementById('agreeTerms');
+    if (!terms.checked) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      showToast('Please agree to the Terms & Privacy Policy.', 'error');
+    }
+  }, true); // capture phase so it runs before auth.js handler
+</script>
+</body>
+</html>

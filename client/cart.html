@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Cart — Veloura Rugs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- MARQUEE BAR -->
+<div class="marquee-bar">
+  <div class="marquee-track">
+    <span>UPTO 60% OFF ON ENTIRE STORE</span><span>✦</span>
+    <span>EXTRA 15% WITH CODE <strong>EXTRA15%OFF</strong></span><span>✦</span>
+    <span>ALL RUGS COME WITH 30 DAYS RETURN POLICY</span><span>✦</span>
+    <span>🎉 FAST DELIVERY — GET YOUR ORDER IN 5–7 BUSINESS DAYS 🎉</span><span>✦</span>
+    <span>UPTO 60% OFF ON ENTIRE STORE</span><span>✦</span>
+    <span>EXTRA 15% WITH CODE <strong>EXTRA15%OFF</strong></span><span>✦</span>
+    <span>ALL RUGS COME WITH 30 DAYS RETURN POLICY</span><span>✦</span>
+    <span>🎉 FAST DELIVERY — GET YOUR ORDER IN 5–7 BUSINESS DAYS 🎉</span><span>✦</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <button class="hamburger" onclick="toggleNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="index.html" class="logo">
+      <img src="image/logo.png" alt="Veloura Rugs" style="height:48px;width:auto;object-fit:contain;display:block;" />
+      <span style="font-size:0.85rem;color:var(--ink);font-weight:600;margin-top:0.35rem;display:block;">Veloura Rugs</span>
+    </a>
+    <div class="search-wrap">
+      <input type="text" placeholder="Search Here..." id="globalSearch" />
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </div>
+    <div class="header-actions">
+      <a href="wishlist.html">Wishlist</a>
+      <a href="about.html">About</a>
+
+      <!-- LOGIN / USER DISPLAY -->
+      <div id="authNav">
+        <a href="login.html" style="font-size:var(--fs-sm);color:var(--muted);font-weight:500;transition:color .2s;"
+           onmouseover="this.style.color='var(--green)'" onmouseleave="this.style.color='var(--muted)'">
+          Login
+        </a>
+      </div>
+
+      <a href="cart.html" class="cart-btn active" id="cartNavBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+        Cart <span class="cart-badge">0</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="nav-inner">
+    <div class="nav-item"><a href="index.html">Home</a></div>
+    <div class="nav-item">
+      <button onclick="this.parentElement.classList.toggle('mob-open')">
+        Shop
+        <svg class="nav-chevron" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l4 4 4-4"/></svg>
+      </button>
+      <div class="mega-drop">
+        <div class="mega-col">
+          <h4>Rugs By Size</h4>
+          <ul>
+            <li><a href="shop.html?size=3x5">3×5 ft</a></li>
+            <li><a href="shop.html?size=4x6">4×6 ft</a></li>
+            <li><a href="shop.html?size=5x8">5×8 ft</a></li>
+            <li><a href="shop.html?size=6x9">6×9 ft</a></li>
+            <li><a href="shop.html?size=7x10">7×10 ft</a></li>
+            <li><a href="shop.html?size=8x10">8×10 ft</a></li>
+            <li><a href="shop.html?size=9x12">9×12 ft</a></li>
+            <li><a href="shop.html?size=10x13">10×14 ft</a></li>
+            <li><a href="shop.html?size=12x15">12×15 ft</a></li>
+          </ul>
+        </div>
+        <div class="mega-col">
+          <h4>Rugs By Style</h4>
+          <ul>
+            <li><a href="shop.html?style=Traditional">Traditional</a></li>
+            <li><a href="shop.html?style=Transitional">Transitional</a></li>
+            <li><a href="shop.html?style=Tribal">Tribal</a></li>
+            <li><a href="shop.html?style=Turkish+Oushak">Turkish Oushak</a></li>
+            <li><a href="shop.html?style=Vintage">Vintage</a></li>
+            <li><a href="shop.html?style=Mamluk">Mamluk</a></li>
+            <li><a href="shop.html?style=Modern">Modern</a></li>
+            <li><a href="shop.html?style=Kilims">Kilims</a></li>
+            <li><a href="shop.html?style=Moroccan">Moroccan</a></li>
+          </ul>
+        </div>
+        <div class="mega-col">
+          <h4>Rugs By Color</h4>
+          <ul>
+            <li><a href="shop.html?color=Multicolor">Multicolor</a></li>
+            <li><a href="shop.html?color=Beige">Beige</a></li>
+            <li><a href="shop.html?color=Red">Red</a></li>
+            <li><a href="shop.html?color=Blue">Blue</a></li>
+            <li><a href="shop.html?color=Brown">Brown</a></li>
+            <li><a href="shop.html?color=Grey">Grey</a></li>
+            <li><a href="shop.html?color=Green">Green</a></li>
+            <li><a href="shop.html?color=Gold">Gold</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="nav-item"><a href="shop.html">All Rugs</a></div>
+    <div class="nav-item"><a href="shop.html?sort=price-asc">Clearance</a></div>
+    <div class="nav-item"><a href="wishlist.html">My Wishlist</a></div>
+    <div class="nav-item"><a href="about.html">About</a></div>
+    <div class="nav-item"><a href="contact.html">Contact</a></div>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">Home</a>
+    <span class="bc-sep">›</span>
+    <span>My Cart</span>
+  </div>
+</div>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <h1>My Cart</h1>
+  <p>Review Your Items</p>
+</div>
+
+<!-- CART CONTENT -->
+<div style="background:var(--bg)">
+  <div class="section">
+    <div id="cartPageContainer">
+      <div style="text-align:center;padding:4rem;color:var(--muted);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:48px;margin-bottom:1rem;opacity:.3;">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+        <h3 style="font-family:var(--ff-display);color:var(--green);margin-bottom:.5rem;">Your Cart is Empty</h3>
+        <p>Start adding rugs to your cart!</p>
+        <a href="shop.html" class="btn btn-outline-green" style="margin-top:1rem;display:inline-block;">Shop Now</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEWSLETTER -->
+<div class="newsletter">
+  <h2>Sign Up &amp; Save</h2>
+  <p>Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.</p>
+  <div class="newsletter-form">
+    <input type="email" placeholder="Your Email Address" />
+    <button>Subscribe</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo">
+          <img src="image/logo.png" alt="Veloura Rugs" style="height:40px;width:auto;object-fit:contain;filter:brightness(0) invert(1);display:block;" />
+          <span style="font-size:0.95rem;color:var(--white);font-weight:600;margin-top:0.5rem;display:block;text-align:center;">Veloura Rugs</span>
+        </div>
+        <p>Artistry &amp; History in Every Knot</p>
+        <div class="footer-contact">
+          <p><strong style="color:rgba(255,255,255,.8);">Address:</strong><br/>4731 Pell Dr, Ste 5<br/>Sacramento, CA 95838<br/>Monday – Saturday by Appointment Only</p>
+          <p style="margin-top:.7rem;">📞 +1 415 565 1579<br/>✉️ velourarugs@email.com</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="shop.html">All Rugs</a></li>
+          <li><a href="wishlist.html">My Wishlist</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="wishlist.html">Wishlist</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+          <li><a href="checkout.html">Checkout</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Policies</h4>
+        <ul>
+          <li><a href="#">Refund Policy</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Shipping Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© Copyright Veloura Rugs 2026. All rights reserved.</span>
+      <div class="payment-icons">
+        <span class="payment-icon">Visa</span>
+        <span class="payment-icon">Mastercard</span>
+        <span class="payment-icon">Amex</span>
+        <span class="payment-icon">PayPal</span>
+        <span class="payment-icon">Apple Pay</span>
+        <span class="payment-icon">Google Pay</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- CART SIDEBAR -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h3>Your Cart (0 items)</h3>
+    <button class="close-btn" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items-list" style="display:none;"></div>
+  <div class="cart-empty">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <path d="M16 10a4 4 0 01-8 0"/>
+    </svg>
+    <p>Your cart is empty.<br/>Don't miss out on our best deals!</p>
+    <a href="shop.html" class="btn btn-outline-green" style="font-size:.8rem;padding:.55rem 1.4rem;">Start Shopping</a>
+  </div>
+  <div class="cart-footer" style="display:none;">
+    <div class="cart-total-row">
+      <span>Total</span>
+      <span>PKR 0.00</span>
+    </div>
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:.7rem;text-align:center;">Taxes and shipping calculated at checkout</p>
+    <a href="checkout.html" class="btn btn-green" style="display:block;text-align:center;">Proceed to Checkout</a>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/wishlist.js"></script>
+<script src="js/app.js"></script>
+<script>
+  function renderCartPage() {
+    const container = document.getElementById('cartPageContainer');
+    const items = Cart.items;
+    if (items.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center;padding:4rem;color:var(--muted);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:48px;margin-bottom:1rem;opacity:.3;">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          <h3 style="font-family:var(--ff-display);color:var(--green);margin-bottom:.5rem;">Your Cart is Empty</h3>
+          <p>Start adding rugs to your cart!</p>
+          <a href="shop.html" class="btn btn-outline-green" style="margin-top:1rem;display:inline-block;">Shop Now</a>
+        </div>
+      `;
+      return;
+    }
+
+    const total = Cart.getTotal();
+    container.innerHTML = `
+      <div style="max-width:1000px;margin:auto;">
+        <div style="display:grid;grid-template-columns:1fr 300px;gap:3rem;">
+          <div>
+            <h2 style="font-family:var(--ff-display);color:var(--green);margin-bottom:2rem;">Cart Items</h2>
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              ${items.map(item => `
+                <div class="cart-item" style="display:grid;grid-template-columns:100px 1fr auto;gap:1rem;padding:1rem;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);">
+                  <div class="cart-item-img">
+                    <img src="${item.images?.[0] || ''}" alt="${item.name}" style="width:100px;height:100px;object-fit:cover;border-radius:3px;" />
+                  </div>
+                  <div class="cart-item-info">
+                    <h4 style="font-family:var(--ff-display);font-size:1.1rem;color:var(--ink);margin-bottom:.5rem;">${item.name}</h4>
+                    <div class="cart-item-price" style="font-size:1.1rem;font-weight:600;color:var(--green);margin-bottom:.5rem;">PKR ${(item.price * item.qty).toLocaleString('en-US', {minimumFractionDigits:2})}</div>
+                    <div class="cart-item-qty" style="display:flex;align-items:center;gap:.5rem;">
+                      <button class="qty-btn" onclick="Cart.updateQty(${item.id}, ${item.qty - 1}).then(() => renderCartPage());">−</button>
+                      <span class="qty-num">${item.qty}</span>
+                      <button class="qty-btn" onclick="Cart.updateQty(${item.id}, ${item.qty + 1}).then(() => renderCartPage());">+</button>
+                    </div>
+                  </div>
+                  <button class="remove-item" onclick="Cart.remove(${item.id}).then(() => renderCartPage());" title="Remove" style="background:none;border:none;color:var(--muted);font-size:1.2rem;padding:.5rem;">✕</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div>
+            <div style="background:var(--white);padding:2rem;border-radius:var(--radius);box-shadow:var(--shadow);position:sticky;top:100px;">
+              <h3 style="font-family:var(--ff-display);color:var(--green);margin-bottom:1rem;">Order Summary</h3>
+              <div style="border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1rem;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:.5rem;">
+                  <span>Subtotal (${items.reduce((sum, i) => sum + i.qty, 0)} items)</span>
+                  <span>PKR ${total.toLocaleString('en-US', {minimumFractionDigits:2})}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:.5rem;">
+                  <span>Shipping</span>
+                  <span>Calculated at checkout</span>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;">
+                <span>Total</span>
+                <span style="color:var(--green);">PKR ${total.toLocaleString('en-US', {minimumFractionDigits:2})}</span>
+              </div>
+              <a href="checkout.html" class="btn btn-green" style="width:100%;text-align:center;display:block;margin-bottom:1rem;">Proceed to Checkout</a>
+              <a href="shop.html" class="btn btn-outline-green" style="width:100%;text-align:center;display:block;">Continue Shopping</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Hook into Cart init
+  const oldCartInit = Cart.init;
+  Cart.init = async function() {
+    await oldCartInit.call(Cart);
+    renderCartPage();
+  };
+
+  document.addEventListener('DOMContentLoaded', renderCartPage);
+</script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Show username + logout if logged in, otherwise show Login link
+    (function() {
+      const user = VelouraAPI.getCurrentUser();
+      const authNav = document.getElementById('authNav');
+      if (!authNav) return;
+      if (user) {
+        authNav.innerHTML = `
+          <span style="font-size:var(--fs-sm);color:var(--green);font-weight:600;">✦ ${user.name.split(' ')[0]}</span>
+          <button onclick="VelouraAPI.logout();location.reload();"
+            style="font-size:var(--fs-sm);color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--ff-body);font-weight:500;margin-left:.8rem;">
+            Logout
+          </button>
+        `;
+      }
+    })();
+  </script>
+</body>
+</html>

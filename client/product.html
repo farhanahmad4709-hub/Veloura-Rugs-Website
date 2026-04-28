@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product — Veloura Rugs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .product-detail-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 460px) 1fr;
+      gap: 3rem;
+      align-items: start;
+      max-width: 1100px;
+      margin: auto;
+      padding: 3rem 2rem;
+    }
+    .product-detail-image {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      min-height: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .product-detail-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .product-detail-info {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+    }
+    .product-detail-info h1 {
+      font-family: var(--ff-display);
+      color: var(--green);
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .product-detail-info .product-price {
+      display: flex;
+      align-items: baseline;
+      gap: .8rem;
+      margin-bottom: 1.1rem;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+    .product-detail-info .price-orig {
+      font-size: 1rem;
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+    .product-detail-info p { color: var(--muted); line-height: 1.8; margin-bottom: 1.2rem; }
+    .product-detail-info .meta-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+    .product-notice {
+      max-width: 680px;
+      margin: 4rem auto;
+      padding: 2rem;
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .product-notice h2 { margin-bottom: 1rem; color: var(--green); }
+    .product-notice p { margin-bottom: 1.5rem; }
+
+    @media (max-width: 900px) {
+      .product-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 2rem 1rem;
+      }
+      .product-detail-image {
+        min-height: 360px;
+      }
+      .product-detail-info {
+        padding: 1.8rem;
+      }
+    }
+    @media (max-width: 560px) {
+      .product-detail-info {
+        padding: 1.4rem;
+      }
+      .product-detail-info h1 { font-size: 1.6rem; }
+      .product-detail-info .product-price { font-size: 1.2rem; }
+      .product-detail-info .meta-list { gap: .75rem; font-size: .9rem; }
+      .product-notice { margin: 2rem auto; padding: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <img src="image/logo.png" alt="Veloura Rugs" style="height:48px;width:auto;object-fit:contain;display:block;" />
+        <span style="font-size:0.85rem;color:var(--ink);font-weight:600;margin-top:0.35rem;display:block;">Veloura Rugs</span>
+      </a>
+      <div class="header-actions">
+        <a href="wishlist.html">Wishlist</a>
+        <a href="about.html">About</a>
+
+        <!-- LOGIN / USER DISPLAY -->
+        <div id="authNav">
+          <a href="login.html" style="font-size:var(--fs-sm);color:var(--muted);font-weight:500;transition:color .2s;"
+             onmouseover="this.style.color='var(--green)'" onmouseleave="this.style.color='var(--muted)'">
+            Login
+          </a>
+        </div>
+
+        <a href="cart.html" class="cart-btn" id="cartNavBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          Cart <span class="cart-badge">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+
+  <main>
+    <section class="section">
+      <div id="productDetail" class="product-detail-grid">
+        <div class="product-detail-image">
+          <img id="productImage" src="" alt="Product image" />
+        </div>
+        <div class="product-detail-info">
+          <p class="product-vendor" id="productVendor"></p>
+          <h1 id="productName">Loading product…</h1>
+          <div class="product-price">
+            <span id="productPrice">PKR 0.00</span>
+            <span class="price-orig" id="productOrigPrice"></span>
+          </div>
+          <p id="productDescription"></p>
+          <div class="meta-list">
+            <span id="productSize"></span>
+            <span id="productStyle"></span>
+            <span id="productColor"></span>
+          </div>
+          <div id="productActions" style="display:flex;gap:1rem;margin-top:2rem;">
+            <!-- Rendered via JS -->
+          </div>
+          <a class="btn btn-outline-green" href="shop.html" style="margin-top:1.5rem;display:inline-block;">Back to Shop</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (async function() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      const detail = document.getElementById('productDetail');
+
+      try {
+        const res = await VelouraAPI.getProducts({ id });
+        const product = res.ok && res.data.length > 0 ? res.data[0] : null;
+
+        if (!product) {
+          detail.innerHTML = `
+            <div class="product-notice">
+              <h2>Product not found</h2>
+              <p>We couldn't find the product you were looking for. Please return to the shop and try again.</p>
+              <a class="btn btn-outline-green" href="shop.html">Back to Shop</a>
+            </div>
+          `;
+          return;
+        }
+
+        const productPrice = parseFloat(product.price || 0);
+        const originalPrice = parseFloat(product.original_price || product.originalPrice || productPrice);
+        const primaryImg = product.images?.[0] || '';
+
+        document.getElementById('productImage').src = primaryImg;
+        document.getElementById('productImage').alt = product.name;
+        document.getElementById('productVendor').textContent = product.vendor || 'Veloura Rugs';
+        document.getElementById('productName').textContent = product.name;
+        document.getElementById('productPrice').textContent = `PKR ${productPrice.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        document.getElementById('productOrigPrice').textContent = originalPrice > productPrice ? `PKR ${originalPrice.toLocaleString('en-US', {minimumFractionDigits: 2})}` : '';
+        document.getElementById('productDescription').textContent = product.description;
+        document.getElementById('productSize').textContent = `Size: ${product.size || ''}`;
+        document.getElementById('productStyle').textContent = `Style: ${product.style || ''}`;
+        document.getElementById('productColor').textContent = `Color: ${product.color || ''}`;
+
+        // Actions
+        const actions = document.getElementById('productActions');
+        actions.innerHTML = `
+          <button class="btn btn-green" onclick='Cart.add(${JSON.stringify(product).replace(/'/g,"&apos;")})'>Add to Cart</button>
+          <button class="btn btn-outline-green ${Wishlist.isWishlisted(product.id)?'active':''}" onclick='Wishlist.toggle(${JSON.stringify(product).replace(/'/g,"&apos;")}).then(res => this.classList.toggle("active", res))'>
+            ${Wishlist.isWishlisted(product.id) ? 'Wishlisted' : 'Add to Wishlist'}
+          </button>
+        `;
+
+      } catch (err) {
+        console.error(err);
+        detail.innerHTML = '<div class="product-notice"><h2>Error</h2><p>Could not load product details.</p></div>';
+      }
+    })();
+  </script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Show username + logout if logged in, otherwise show Login link
+    (function() {
+      const user = VelouraAPI.getCurrentUser();
+      const authNav = document.getElementById('authNav');
+      if (!authNav) return;
+      if (user) {
+        authNav.innerHTML = `
+          <span style="font-size:var(--fs-sm);color:var(--green);font-weight:600;">✦ ${user.name.split(' ')[0]}</span>
+          <button onclick="VelouraAPI.logout();location.reload();"
+            style="font-size:var(--fs-sm);color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--ff-body);font-weight:500;margin-left:.8rem;">
+            Logout
+          </button>
+        `;
+      }
+    })();
+  </script>
+</body>
+</html>

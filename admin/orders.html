@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders — Veloura Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h2>Veloura Rugs</h2>
+        <span>Admin Panel</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html"><span class="icon">📊</span> <span>Dashboard</span></a>
+        <a href="products.html"><span class="icon">📦</span> <span>Products</span></a>
+        <a href="orders.html" class="active"><span class="icon">🛒</span> <span>Orders</span></a>
+        <a href="users.html"><span class="icon">👥</span> <span>Users</span></a>
+        <a href="messages.html"><span class="icon">✉️</span> <span>Messages</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" onclick="AdminAPI.logout()">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="top-bar">
+        <h1>Order Management</h1>
+        <div class="actions">
+          <button class="btn btn-outline" onclick="AdminAPI.exportCSV('orders')">Export CSV</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <select id="statusFilter" onchange="loadOrders()">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="processing">Processing</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTable">
+            <!-- Data loaded via JS -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/admin-api.js"></script>
+  <script>
+    if (!AdminAPI.checkAuth()) {}
+
+    async function loadOrders() {
+      const status = document.getElementById('statusFilter').value;
+      const res = await AdminAPI.getOrders(status);
+      if (res && res.ok && Array.isArray(res.data)) {
+        displayOrders(res.data);
+      }
+    }
+
+    function displayOrders(orders) {
+      const table = document.getElementById('ordersTable');
+      table.innerHTML = orders.map(o => `
+        <tr>
+          <td><strong>${o.order_number}</strong></td>
+          <td>
+            ${o.shipping_name || 'Guest'}<br>
+            <small style="color:var(--muted)">${o.shipping_email || o.user_email || ''}</small>
+          </td>
+          <td>${formatPKR(o.total)}</td>
+          <td>${new Date(o.created_at).toLocaleString()}</td>
+          <td>
+            <select class="badge badge-${o.status}" onchange="updateStatus(${o.id}, this.value)" style="border:none; cursor:pointer; font-family:inherit;">
+              <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+              <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+              <option value="processing" ${o.status === 'processing' ? 'selected' : ''}>Processing</option>
+              <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+              <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+              <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-outline" onclick="viewOrder(${o.id})">Details</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function updateStatus(id, newStatus) {
+      const res = await AdminAPI.updateOrderStatus(id, newStatus);
+      if (res && res.ok) {
+        showToast(`Order #${id} updated to ${newStatus}`, 'success');
+        loadOrders();
+      } else {
+        showToast('Error updating status', 'error');
+      }
+    }
+
+    function viewOrder(id) {
+      // In a full app, this would open a modal with line items
+      alert('Order Detail View - ID: ' + id + '\n(Line items would show here in a full modal)');
+    }
+
+    window.onload = loadOrders;
+  </script>
+</body>
+</html>

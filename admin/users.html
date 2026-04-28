@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users — Veloura Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h2>Veloura Rugs</h2>
+        <span>Admin Panel</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html"><span class="icon">📊</span> <span>Dashboard</span></a>
+        <a href="products.html"><span class="icon">📦</span> <span>Products</span></a>
+        <a href="orders.html"><span class="icon">🛒</span> <span>Orders</span></a>
+        <a href="users.html" class="active"><span class="icon">👥</span> <span>Users</span></a>
+        <a href="messages.html"><span class="icon">✉️</span> <span>Messages</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" onclick="AdminAPI.logout()">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="top-bar">
+        <h1>User Management</h1>
+        <div class="actions">
+          <button class="btn btn-outline" onclick="AdminAPI.exportCSV('users')">Export CSV</button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Orders</th>
+              <th>Total Spent</th>
+              <th>Joined</th>
+            </tr>
+          </thead>
+          <tbody id="usersTable">
+            <!-- Data loaded via JS -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/admin-api.js"></script>
+  <script>
+    if (!AdminAPI.checkAuth()) {}
+
+    async function loadUsers() {
+      const res = await AdminAPI.getUsers();
+      if (res && res.ok && Array.isArray(res.data)) {
+        const table = document.getElementById('usersTable');
+        table.innerHTML = res.data.map(u => `
+          <tr>
+            <td>${u.id}</td>
+            <td><strong>${u.name}</strong> ${u.role === 'admin' ? '<span class="badge badge-confirmed" style="font-size:0.6rem">ADMIN</span>' : ''}</td>
+            <td>${u.email}</td>
+            <td>${u.order_count || 0}</td>
+            <td>${formatPKR(u.total_spent)}</td>
+            <td>${new Date(u.created_at).toLocaleDateString()}</td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    window.onload = loadUsers;
+  </script>
+</body>
+</html>

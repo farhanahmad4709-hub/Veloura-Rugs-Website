@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages — Veloura Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h2>Veloura Rugs</h2>
+        <span>Admin Panel</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html"><span class="icon">📊</span> <span>Dashboard</span></a>
+        <a href="products.html"><span class="icon">📦</span> <span>Products</span></a>
+        <a href="orders.html"><span class="icon">🛒</span> <span>Orders</span></a>
+        <a href="users.html"><span class="icon">👥</span> <span>Users</span></a>
+        <a href="messages.html" class="active"><span class="icon">✉️</span> <span>Messages</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" onclick="AdminAPI.logout()">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="top-bar">
+        <h1>Contact Messages</h1>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Subject</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody id="messagesTable">
+            <!-- Data loaded via JS -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/admin-api.js"></script>
+  <script>
+    if (!AdminAPI.checkAuth()) {}
+
+    async function loadMessages() {
+      const res = await AdminAPI.getMessages();
+      if (res && res.ok && Array.isArray(res.data)) {
+        const table = document.getElementById('messagesTable');
+        table.innerHTML = res.data.map(m => `
+          <tr>
+            <td>${new Date(m.created_at).toLocaleString()}</td>
+            <td><strong>${m.name}</strong></td>
+            <td>${m.email}</td>
+            <td>${m.subject || 'No Subject'}</td>
+            <td><div style="max-width:300px; font-size:0.8rem; color:var(--muted)">${m.message}</div></td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    window.onload = loadMessages;
+  </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — Veloura Rugs</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="login-page">
+  <div class="login-card">
+    <h1>Veloura Admin</h1>
+    <p class="subtitle">Dashboard Login</p>
+    <form id="adminLoginForm" onsubmit="return handleLogin(event)">
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter username" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password" required>
+      </div>
+      <button type="submit" class="btn">Sign In</button>
+      <p class="error-msg" id="errorMsg"></p>
+    </form>
+  </div>
+  <script>
+    // If already logged in, redirect
+    if (localStorage.getItem('veloura_admin_token')) {
+      window.location.href = 'dashboard.html';
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('errorMsg');
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: username + '@veloura.com', password })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.user && data.user.role === 'admin') {
+          localStorage.setItem('veloura_admin_token', data.token);
+          localStorage.setItem('veloura_admin_user', JSON.stringify(data.user));
+          window.location.href = 'dashboard.html';
+        } else if (res.ok && data.user && data.user.role !== 'admin') {
+          errorMsg.textContent = 'Access denied. Admin privileges required.';
+        } else {
+          errorMsg.textContent = data.error || 'Invalid credentials';
+        }
+      } catch (err) {
+        errorMsg.textContent = 'Server connection failed. Is the server running?';
+      }
+    }
+  </script>
+</body>
+</html>

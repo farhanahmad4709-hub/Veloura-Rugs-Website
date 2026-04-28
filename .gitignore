@@ -1,0 +1,34 @@
+# Node modules
+node_modules/
+
+# Build artifacts
+dist/
+build/
+
+# Environment variables
+.env
+*.local
+
+# Documentation (not for GitHub)
+[Dd]ocumentation.html
+[Vv]eloura_[Rr]ugs_[Dd]ocumentation.docx
+Documentation.html
+veloura_Rugs_Documentation.docx
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Package lock (optional — remove this line if you want to commit it)
+# AI/Temporary scratch space
+scratch/
