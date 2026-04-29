@@ -43,12 +43,19 @@ async function registerUser() {
   btn.disabled = true;
   btn.textContent = 'Creating Account...';
 
-  const res = await VelouraAPI.register(name, email, password);
-  if (res.ok) {
-    showToast('Account created! Sign in now.', '✓', 'toast-gold');
-    setTimeout(() => window.location.href = 'login.html', 1500);
-  } else {
-    showToast(res.data?.error || 'Registration failed', '✕', 'toast-error');
+  try {
+    const res = await VelouraAPI.register(name, email, password);
+    if (res.ok) {
+      showToast('Account created! Sign in now.', '✓', 'toast-gold');
+      setTimeout(() => window.location.href = 'login.html', 1500);
+    } else {
+      showToast(res.data?.error || 'Registration failed', '✕', 'toast-error');
+      btn.disabled = false;
+      btn.textContent = 'Sign Up';
+    }
+  } catch (err) {
+    console.error('Register error:', err);
+    showToast('Network error. Please try again.', '✕', 'toast-error');
     btn.disabled = false;
     btn.textContent = 'Sign Up';
   }
@@ -73,12 +80,19 @@ async function loginUser() {
   btn.disabled = true;
   btn.textContent = 'Signing In...';
 
-  const res = await VelouraAPI.login(email, password);
-  if (res.ok && res.data?.user) {
-    showToast(`Welcome back, ${res.data.user.name.split(' ')[0]}!`, '✓', 'toast-gold');
-    setTimeout(() => window.location.href = 'index.html', 1200);
-  } else {
-    showToast(res.data?.error || 'Login failed - unexpected response', '✕', 'toast-error');
+  try {
+    const res = await VelouraAPI.login(email, password);
+    if (res.ok && res.data?.user) {
+      showToast(`Welcome back, ${res.data.user.name.split(' ')[0]}!`, '✓', 'toast-gold');
+      setTimeout(() => window.location.href = 'index.html', 1200);
+    } else {
+      showToast(res.data?.error || 'Login failed - unexpected response', '✕', 'toast-error');
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  } catch (err) {
+    console.error('Login error:', err);
+    showToast('Network error. Please try again.', '✕', 'toast-error');
     btn.disabled = false;
     btn.textContent = 'Sign In';
   }

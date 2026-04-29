@@ -155,7 +155,34 @@ function handleWishlist(id, btn) {
 }
 
 /* ─── NEWSLETTER ─────────────────────────────────────────────── */
+/* ─── AUTH UI UPDATE ─────────────────────────────────────────── */
+function updateAuthUI() {
+  const user = VelouraAPI.getCurrentUser();
+  const authNav = document.getElementById('authNav');
+  if (!authNav) return;
+  
+  if (user && user.name) {
+    authNav.innerHTML = `
+      <span style="font-size:var(--fs-sm);color:var(--green);font-weight:600;">✦ ${user.name.split(' ')[0]}</span>
+      <button onclick="VelouraAPI.logout();location.reload();"
+        style="font-size:var(--fs-sm);color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--ff-body);font-weight:500;margin-left:.8rem;">
+        Logout
+      </button>
+    `;
+  } else {
+    authNav.innerHTML = `
+      <a href="login.html" style="font-size:var(--fs-sm);color:var(--muted);font-weight:500;transition:color .2s;"
+         onmouseover="this.style.color='var(--green)'" onmouseleave="this.style.color='var(--muted)'">
+        Login
+      </a>
+    `;
+  }
+}
+
+// Init on load
 document.addEventListener('DOMContentLoaded', () => {
+  updateAuthUI();
+  // ... rest of init
   const form = document.querySelector('.newsletter-form');
   if (form) {
     form.addEventListener('submit', e => {

@@ -68,7 +68,11 @@ const VelouraAPI = {
   },
 
   getCurrentUser() {
-    try { return JSON.parse(localStorage.getItem('veloura_current_user')); }
+    try { 
+      const data = localStorage.getItem('veloura_current_user');
+      if (!data || data === 'undefined') return null;
+      return JSON.parse(data); 
+    }
     catch { return null; }
   },
 

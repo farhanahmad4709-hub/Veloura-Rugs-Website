@@ -388,8 +388,8 @@
           btn.textContent = 'Place Order';
         }
       } catch (err) {
-        console.error(err);
-        showToast('An error occurred. Please check your connection.', '❌', 'toast-error');
+        console.error('Order error:', err);
+        showToast('Network error. Please try again.', '✕', 'toast-error');
         btn.disabled = false;
         btn.textContent = 'Place Order';
       }

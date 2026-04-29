@@ -673,21 +673,6 @@
 </script>
   <script src="js/auth.js"></script>
   <script>
-    // Show username + logout if logged in, otherwise show Login link
-    (function() {
-      const user = VelouraAPI.getCurrentUser();
-      const authNav = document.getElementById('authNav');
-      if (!authNav) return;
-      if (user) {
-        authNav.innerHTML = `
-          <span style="font-size:var(--fs-sm);color:var(--green);font-weight:600;">✦ ${user.name.split(' ')[0]}</span>
-          <button onclick="VelouraAPI.logout();location.reload();"
-            style="font-size:var(--fs-sm);color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--ff-body);font-weight:500;margin-left:.8rem;">
-            Logout
-          </button>
-        `;
-      }
-    })();
   </script>
 </body>
 </html>
