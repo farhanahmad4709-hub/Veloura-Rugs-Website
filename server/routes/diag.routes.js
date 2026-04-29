@@ -33,4 +33,14 @@ router.get('/diag', async (req, res) => {
   }
 });
 
+router.get('/force-init', async (req, res) => {
+  try {
+    const ensureDatabaseReady = require('../utils/db-init');
+    await ensureDatabaseReady();
+    res.json({ ok: true, message: 'Database forcefully initialized and healed!' });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 module.exports = router;

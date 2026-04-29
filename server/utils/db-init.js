@@ -103,15 +103,15 @@ async function ensureDatabaseReady(req, res, next) {
         await pool.query(sql);
       }
       
-      // Ensure missing columns exist in existing tables (Self-Healing)
+      // Ensure missing columns exist in existing tables (Self-Healing - Forceful)
       const columnFixes = [
-        `ALTER TABLE products ADD COLUMN IF NOT EXISTS stock INT DEFAULT 100`,
-        `ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(12,2) DEFAULT 0.00`,
-        `ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_fee DECIMAL(12,2) DEFAULT 0.00`,
-        `ALTER TABLE orders ADD COLUMN IF NOT EXISTS notes TEXT`
+        `ALTER TABLE products ADD COLUMN stock INT DEFAULT 100`,
+        `ALTER TABLE orders ADD COLUMN discount_amount DECIMAL(12,2) DEFAULT 0.00`,
+        `ALTER TABLE orders ADD COLUMN shipping_fee DECIMAL(12,2) DEFAULT 0.00`,
+        `ALTER TABLE orders ADD COLUMN notes TEXT`
       ];
       for (const sql of columnFixes) {
-        try { await pool.query(sql); } catch(e) { /* Ignore if already exists */ }
+        try { await pool.query(sql); } catch(e) { /* Ignore error if column already exists */ }
       }
 
       console.log('✅ Tables verified/created');
