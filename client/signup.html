@@ -165,7 +165,7 @@
     if (!terms.checked) {
       e.stopImmediatePropagation();
       e.preventDefault();
-      showToast('Please agree to the Terms & Privacy Policy.', 'error');
+      showToast('Please agree to the Terms & Privacy Policy.', '✕', 'toast-error');
     }
   }, true); // capture phase so it runs before auth.js handler
 </script>

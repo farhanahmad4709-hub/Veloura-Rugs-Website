@@ -12,9 +12,9 @@ function showToast(message, icon = '✓', cls = '') {
   }
   const toast = document.createElement('div');
   toast.className = `toast ${cls}`;
-  // Safety check: ensure icon and message are not undefined
-  const iconSafe = icon || '✓';
-  const msgSafe = message || 'Action completed';
+  // Safety check: ensure icon and message are not literally "undefined"
+  const iconSafe = (icon && icon !== 'undefined' && icon !== 'error' && icon !== 'info' && icon !== 'success') ? icon : '✓';
+  const msgSafe = (message && message !== 'undefined') ? message : 'Action completed';
   toast.innerHTML = `<span>${iconSafe}</span><span>${msgSafe}</span>`;
   container.appendChild(toast);
   setTimeout(() => {
@@ -166,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
         input.value = '';
       }
     });
-    // handle button click too
     const btn = form.querySelector('button');
     if (btn) {
       btn.addEventListener('click', () => {

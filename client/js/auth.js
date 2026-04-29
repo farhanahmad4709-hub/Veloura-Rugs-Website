@@ -2,27 +2,7 @@
    VELOURA RUGS — AUTH SYSTEM (API DRIVEN)
    ═══════════════════════════════════════════════════════════════ */
 
-/* ─── TOAST NOTIFICATIONS ────────────────────────────────────── */
-function showToast(message, type = 'info', icon = '') {
-  let container = document.querySelector('.toast-container');
-  if (!container) {
-    container = document.createElement('div');
-    container.className = 'toast-container';
-    document.body.appendChild(container);
-  }
-  const icons = { success: '✦', error: '✕', info: '◈' };
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.innerHTML = `
-    <span class="toast-icon">${icon || icons[type]}</span>
-    <span>${message}</span>
-  `;
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.classList.add('toast-out');
-    setTimeout(() => toast.remove(), 350);
-  }, 3500);
-}
+// auth.js now relies on the global showToast from app.js to avoid inconsistencies.
 
 /* ─── VALIDATION HELPERS ─────────────────────────────────────── */
 function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()); }
@@ -65,10 +45,10 @@ async function registerUser() {
 
   const res = await VelouraAPI.register(name, email, password);
   if (res.ok) {
-    showToast('Account created! Sign in now.', 'success');
+    showToast('Account created! Sign in now.', '✓', 'toast-gold');
     setTimeout(() => window.location.href = 'login.html', 1500);
   } else {
-    showToast(res.error || 'Registration failed', 'error');
+    showToast(res.data?.error || 'Registration failed', '✕', 'toast-error');
     btn.disabled = false;
     btn.textContent = 'Sign Up';
   }
@@ -95,10 +75,10 @@ async function loginUser() {
 
   const res = await VelouraAPI.login(email, password);
   if (res.ok) {
-    showToast(`Welcome back, ${res.user.name}!`, 'success');
+    showToast(`Welcome back, ${res.data.user.name.split(' ')[0]}!`, '✓', 'toast-gold');
     setTimeout(() => window.location.href = 'index.html', 1200);
   } else {
-    showToast(res.error || 'Login failed', 'error');
+    showToast(res.data?.error || 'Login failed', '✕', 'toast-error');
     btn.disabled = false;
     btn.textContent = 'Sign In';
   }
@@ -129,6 +109,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
     loginForm.addEventListener('submit', e => { e.preventDefault(); loginUser(); });
-    if (VelouraAPI.isLoggedIn()) window.location.href = 'index.html';
+    // Only redirect if actually logged in (double check token)
+    if (VelouraAPI.isLoggedIn()) {
+      const user = VelouraAPI.getCurrentUser();
+      if (user) window.location.href = 'index.html';
+      else VelouraAPI.logout(); // Stale state, clean up
+    }
   }
 });

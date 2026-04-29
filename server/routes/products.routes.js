@@ -1,7 +1,13 @@
 const router = require('express').Router();
 const { pool } = require('../config/db');
 
+let lastDbCheck = 0;
+const DB_CHECK_INTERVAL = 1000 * 60 * 5; // 5 minutes
+
 async function ensureDatabaseReady() {
+  const now = Date.now();
+  if (now - lastDbCheck < DB_CHECK_INTERVAL) return;
+  lastDbCheck = now;
   try {
     const [tables] = await pool.query('SHOW TABLES');
     const tableList = tables.map(t => Object.values(t)[0].toLowerCase());
