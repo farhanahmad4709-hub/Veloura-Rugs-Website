@@ -25,7 +25,11 @@ const VelouraAPI = {
     const headers = { 'Content-Type': 'application/json', ...options.headers };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+    const res = await fetch(`${API_BASE}${endpoint}`, { 
+      ...options, 
+      headers,
+      cache: 'no-store' // Prevent 304 caching issues
+    });
     if (res.status === 401) {
       this.clearToken();
       // Don't redirect if already on login page

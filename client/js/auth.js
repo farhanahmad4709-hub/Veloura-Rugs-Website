@@ -43,8 +43,18 @@ async function registerUser() {
   btn.disabled = true;
   btn.textContent = 'Creating Account...';
 
+  // Safety timeout to reset button if request hangs
+  const safetyTimeout = setTimeout(() => {
+    if (btn.disabled) {
+      btn.disabled = false;
+      btn.textContent = 'Sign Up';
+      showToast('Request taking too long. Please try again.', '✕', 'toast-error');
+    }
+  }, 15000);
+
   try {
     const res = await VelouraAPI.register(name, email, password);
+    clearTimeout(safetyTimeout);
     if (res.ok) {
       showToast('Account created! Sign in now.', '✓', 'toast-gold');
       setTimeout(() => window.location.href = 'login.html', 1500);
@@ -54,6 +64,7 @@ async function registerUser() {
       btn.textContent = 'Sign Up';
     }
   } catch (err) {
+    clearTimeout(safetyTimeout);
     console.error('Register error:', err);
     showToast('Network error. Please try again.', '✕', 'toast-error');
     btn.disabled = false;
@@ -80,8 +91,18 @@ async function loginUser() {
   btn.disabled = true;
   btn.textContent = 'Signing In...';
 
+  // Safety timeout
+  const safetyTimeout = setTimeout(() => {
+    if (btn.disabled) {
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+      showToast('Request taking too long. Please try again.', '✕', 'toast-error');
+    }
+  }, 15000);
+
   try {
     const res = await VelouraAPI.login(email, password);
+    clearTimeout(safetyTimeout);
     if (res.ok && res.data?.user) {
       showToast(`Welcome back, ${res.data.user.name.split(' ')[0]}!`, '✓', 'toast-gold');
       setTimeout(() => window.location.href = 'index.html', 1200);
@@ -91,6 +112,7 @@ async function loginUser() {
       btn.textContent = 'Sign In';
     }
   } catch (err) {
+    clearTimeout(safetyTimeout);
     console.error('Login error:', err);
     showToast('Network error. Please try again.', '✕', 'toast-error');
     btn.disabled = false;

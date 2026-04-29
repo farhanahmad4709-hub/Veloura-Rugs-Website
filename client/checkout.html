@@ -357,6 +357,15 @@
       btn.disabled = true;
       btn.textContent = 'Processing...';
 
+      // Safety timeout
+      const safetyTimeout = setTimeout(() => {
+        if (btn.disabled) {
+          btn.disabled = false;
+          btn.textContent = 'Place Order';
+          showToast('Request taking too long. Please try again.', '✕', 'toast-error');
+        }
+      }, 20000);
+
       const orderData = {
         shipping: {
           name: document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value,
@@ -378,6 +387,7 @@
 
       try {
         const res = await VelouraAPI.createOrder(orderData);
+        clearTimeout(safetyTimeout);
         if (res.ok) {
           showToast('Order placed successfully! Thank you for shopping with Veloura Rugs.', '🎉', 'toast-gold');
           if (window.Cart) Cart.clear();
@@ -388,6 +398,7 @@
           btn.textContent = 'Place Order';
         }
       } catch (err) {
+        clearTimeout(safetyTimeout);
         console.error('Order error:', err);
         showToast('Network error. Please try again.', '✕', 'toast-error');
         btn.disabled = false;

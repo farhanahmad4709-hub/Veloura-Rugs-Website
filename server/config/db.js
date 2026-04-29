@@ -7,7 +7,10 @@ console.log('🔌 Attempting DB Connection...');
 const poolConfig = process.env.DATABASE_URL 
   ? { 
       uri: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false } // Required for some cloud providers
+      ssl: { rejectUnauthorized: false },
+      connectionLimit: 1, // Single connection per serverless instance
+      waitForConnections: true,
+      queueLimit: 0
     }
   : {
       host: process.env.DB_HOST || '127.0.0.1',
@@ -15,7 +18,8 @@ const poolConfig = process.env.DATABASE_URL
       password: process.env.DB_PASSWORD || '',
       database: process.env.DB_NAME || 'test',
       port: process.env.DB_PORT || 3306,
-      ssl: { rejectUnauthorized: false }
+      ssl: { rejectUnauthorized: false },
+      connectionLimit: 10
     };
 
 const pool = mysql.createPool(poolConfig);
