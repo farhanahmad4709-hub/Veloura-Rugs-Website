@@ -25,11 +25,17 @@ const VelouraAPI = {
     const headers = { 'Content-Type': 'application/json', ...options.headers };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch(`${API_BASE}${endpoint}`, { 
-      ...options, 
-      headers,
-      cache: 'no-store' // Prevent 304 caching issues
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+    try {
+      const res = await fetch(`${API_BASE}${endpoint}`, { 
+        ...options, 
+        headers,
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
     if (res.status === 401) {
       this.clearToken();
       // Don't redirect if already on login page
@@ -43,8 +49,13 @@ const VelouraAPI = {
       return { ok: res.ok, blob: await res.blob(), status: res.status };
     }
 
-    const data = await res.json().catch(() => ({}));
-    return { ok: res.ok, data, status: res.status };
+      const data = await res.json().catch(() => ({}));
+      return { ok: res.ok, data, status: res.status };
+    } catch (err) {
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError') return { ok: false, data: { error: 'Request timed out' }, status: 408 };
+      return { ok: false, data: { error: 'Network error' }, status: 500 };
+    }
   },
 
   /* ─── AUTH ──────────────────────────────── */

@@ -41,10 +41,8 @@ function toggleNav() {
 }
 
 /* ─── QUICK VIEW MODAL ───────────────────────────────────────── */
-function openQuickView(productId) {
-  const product = getProductById(productId);
+function openQuickViewObj(product) {
   if (!product) return;
-
   let modal = document.getElementById('qvModal');
   if (!modal) {
     modal = document.createElement('div');
@@ -97,24 +95,28 @@ function closeQuickView() {
 }
 
 /* ─── RENDER PRODUCT CARD ────────────────────────────────────── */
-function renderProductCard(product) {
-  const wishlisted = Wishlist.isWishlisted(product.id);
-  const badgeCls = product.badge === 'NEW' ? 'product-badge badge-new' : 'product-badge';
-  const primaryImg = product.images?.[0] || '';
-  const productPrice = product.price || 0;
-  const originalPrice = product.original_price || product.originalPrice || productPrice;
-
-  return `
 /* ─── RENDER PRODUCT CARD ────────────────────────────────────── */
 function renderProductCard(product) {
+  if (!product) return '';
   const wishlisted = Wishlist.isWishlisted(product.id);
   const badgeCls = product.badge === 'NEW' ? 'product-badge badge-new' : 'product-badge';
-  const primaryImg = product.images?.[0] || '';
-  const productPrice = product.price || 0;
-  const originalPrice = product.original_price || product.originalPrice || productPrice;
+  
+  let images = [];
+  if (product.image_urls && typeof product.image_urls === 'string') {
+    images = product.image_urls.split(',');
+  } else if (Array.isArray(product.images)) {
+    images = product.images;
+  }
+  const primaryImg = (images.length > 0 && images[0]) ? images[0] : 'image/placeholder.jpg';
+  
+  const productPrice = parseFloat(product.price) || 0;
+  const originalPrice = parseFloat(product.original_price || product.originalPrice || productPrice);
+
+  // Safe JSON for DOM
+  const productJson = JSON.stringify(product).replace(/'/g, "&apos;");
 
   return `
-    <div class="product-card">
+    <div class="product-card" data-product='${productJson}'>
       <div class="product-img">
         <a href="product.html?id=${product.id}">
           <img class="main-img" src="${primaryImg}" alt="${product.name}" loading="lazy" />
@@ -122,10 +124,10 @@ function renderProductCard(product) {
         ${product.badge ? `<span class="${badgeCls}">${product.badge}</span>` : ''}
         <div class="product-actions">
           <button class="action-btn ${wishlisted ? 'active' : ''}" data-wishlist="${product.id}"
-            title="Wishlist" onclick="handleWishlist(${product.id}, this)">
+            title="Wishlist" onclick="handleWishlist(this)">
             <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
           </button>
-          <button class="action-btn" title="Quick View" onclick="openQuickView(${product.id})">
+          <button class="action-btn" title="Quick View" onclick="handleQuickView(this)">
             <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
         </div>
@@ -137,21 +139,24 @@ function renderProductCard(product) {
           <span class="price-sale">PKR ${productPrice.toLocaleString('en-US',{minimumFractionDigits:2})}</span>
           <span class="price-orig">PKR ${originalPrice.toLocaleString('en-US',{minimumFractionDigits:2})}</span>
         </div>
-        <button class="product-cta" onclick='Cart.add(${JSON.stringify(product).replace(/'/g,"&apos;")})'>Add to Cart</button>
+        <button class="product-cta" onclick='Cart.add(${productJson})'>Add to Cart</button>
       </div>
     </div>
   `;
 }
 
-function handleWishlist(id, btn) {
-  const product = getProductById(id);
-  if (!product) return;
-  const added = Wishlist.toggle(product);
-  if (added) {
-    btn.classList.add('active');
-  } else {
-    btn.classList.remove('active');
-  }
+function handleWishlist(btn) {
+  const card = btn.closest('.product-card');
+  if (!card) return;
+  const product = JSON.parse(card.dataset.product);
+  Wishlist.toggle(product);
+}
+
+function handleQuickView(btn) {
+  const card = btn.closest('.product-card');
+  if (!card) return;
+  const product = JSON.parse(card.dataset.product);
+  openQuickViewObj(product);
 }
 
 /* ─── NEWSLETTER ─────────────────────────────────────────────── */

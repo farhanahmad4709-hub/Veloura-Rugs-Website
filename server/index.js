@@ -17,7 +17,26 @@ const { ensureDatabaseReady } = require('./utils/db-init');
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(ensureDatabaseReady);
+
+// Global DB Readiness state
+let isDbReady = false;
+let dbCheckInProgress = null;
+
+app.use(async (req, res, next) => {
+  if (isDbReady) return next();
+  
+  if (!dbCheckInProgress) {
+    dbCheckInProgress = ensureDatabaseReady()
+      .then(() => { isDbReady = true; dbCheckInProgress = null; })
+      .catch(err => { console.error('DB Readiness Error:', err); dbCheckInProgress = null; });
+  }
+  
+  // Safety timeout: don't block request for more than 8s
+  const timeout = new Promise(resolve => setTimeout(resolve, 8000));
+  await Promise.race([dbCheckInProgress, timeout]);
+  
+  next();
+});
 
 /* ─── API ROUTES ─────────────────────────── */
 app.use('/api/auth', require('./routes/auth.routes'));
