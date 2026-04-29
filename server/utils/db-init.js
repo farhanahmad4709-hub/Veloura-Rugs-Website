@@ -4,11 +4,17 @@ let lastDbCheck = 0;
 const DB_CHECK_INTERVAL = 1000 * 60 * 5; // 5 minutes
 
 async function ensureDatabaseReady(req, res, next) {
-  // Skip for static files
-  if (req.path.includes('.') || req.path.startsWith('/admin')) return next();
+  // Skip for static files if req exists
+  if (req && req.path && (req.path.includes('.') || req.path.startsWith('/admin'))) {
+    if (next) return next();
+    return;
+  }
   
   const now = Date.now();
-  if (now - lastDbCheck < DB_CHECK_INTERVAL) return next();
+  if (now - lastDbCheck < DB_CHECK_INTERVAL) {
+    if (next) return next();
+    return;
+  }
   lastDbCheck = now;
 
   console.log('🔌 Verifying Database Schema...');
@@ -134,11 +140,11 @@ async function ensureDatabaseReady(req, res, next) {
       }
     }
     
-    next();
+    if (next) next();
   } catch (err) {
     console.error('❌ Database Initialization Error:', err.message);
     // Don't block the request if it's just a health check failure
-    next();
+    if (next) next();
   }
 }
 
