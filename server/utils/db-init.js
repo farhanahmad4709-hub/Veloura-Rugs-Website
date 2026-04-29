@@ -42,7 +42,8 @@ async function ensureDatabaseReady(req, res, next) {
           color VARCHAR(30) NOT NULL,
           badge VARCHAR(20) DEFAULT '',
           featured BOOLEAN DEFAULT FALSE,
-          is_active BOOLEAN DEFAULT TRUE
+          is_active BOOLEAN DEFAULT TRUE,
+          stock INT DEFAULT 100
         ) ENGINE=InnoDB`,
         `CREATE TABLE IF NOT EXISTS product_images (
           id INT AUTO_INCREMENT PRIMARY KEY,
@@ -73,6 +74,8 @@ async function ensureDatabaseReady(req, res, next) {
           order_number VARCHAR(20) UNIQUE NOT NULL,
           status ENUM('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
           subtotal DECIMAL(12,2) NOT NULL,
+          discount_amount DECIMAL(12,2) DEFAULT 0.00,
+          shipping_fee DECIMAL(12,2) DEFAULT 0.00,
           total DECIMAL(12,2) NOT NULL,
           shipping_name VARCHAR(100),
           shipping_email VARCHAR(255),
@@ -82,13 +85,35 @@ async function ensureDatabaseReady(req, res, next) {
           shipping_state VARCHAR(100),
           shipping_zip VARCHAR(20),
           payment_method VARCHAR(50),
+          notes TEXT,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+        ) ENGINE=InnoDB`,
+        `CREATE TABLE IF NOT EXISTS order_items (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          order_id INT NOT NULL,
+          product_id INT NOT NULL,
+          quantity INT NOT NULL DEFAULT 1,
+          price_at_time DECIMAL(12,2) NOT NULL,
+          FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+          FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
         ) ENGINE=InnoDB`
       ];
       for (const sql of schemaStatements) {
         await pool.query(sql);
       }
+      
+      // Ensure missing columns exist in existing tables (Self-Healing)
+      const columnFixes = [
+        `ALTER TABLE products ADD COLUMN IF NOT EXISTS stock INT DEFAULT 100`,
+        `ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(12,2) DEFAULT 0.00`,
+        `ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_fee DECIMAL(12,2) DEFAULT 0.00`,
+        `ALTER TABLE orders ADD COLUMN IF NOT EXISTS notes TEXT`
+      ];
+      for (const sql of columnFixes) {
+        try { await pool.query(sql); } catch(e) { /* Ignore if already exists */ }
+      }
+
       console.log('✅ Tables verified/created');
     }
 
