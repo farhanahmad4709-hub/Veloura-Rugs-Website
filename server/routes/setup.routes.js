@@ -3,14 +3,13 @@ const { pool } = require('../config/db');
 
 router.get('/', async (req, res) => {
   try {
-    console.log('🚀 Starting Explicit Database Setup...');
+    console.log('🚀 Running DB X-Ray Scan...');
 
-    // Use 'test.' prefix everywhere to be 1000% sure
+    // 1. Create Tables (Using standard names)
     await pool.query('SET FOREIGN_KEY_CHECKS = 0');
-
-    // 1. Create Tables in the 'test' database explicitly
+    
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS test.products (
+      CREATE TABLE IF NOT EXISTS products (
         id INT PRIMARY KEY AUTO_INCREMENT,
         name VARCHAR(255),
         description TEXT,
@@ -28,7 +27,7 @@ router.get('/', async (req, res) => {
     `);
 
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS test.product_images (
+      CREATE TABLE IF NOT EXISTS product_images (
         id INT PRIMARY KEY AUTO_INCREMENT,
         product_id INT,
         image_url TEXT,
@@ -36,26 +35,35 @@ router.get('/', async (req, res) => {
       )
     `);
 
-    // 2. Reset and Refill
-    await pool.query('TRUNCATE TABLE test.product_images');
-    await pool.query('TRUNCATE TABLE test.products');
+    // 2. Clear and Refill
+    await pool.query('TRUNCATE TABLE product_images');
+    await pool.query('TRUNCATE TABLE products');
     await pool.query('SET FOREIGN_KEY_CHECKS = 1');
 
     await pool.query(`
-      INSERT INTO test.products (id, name, description, price, original_price, discount_pct, badge, size, style, color, featured) VALUES
+      INSERT INTO products (id, name, description, price, original_price, discount_pct, badge, size, style, color, featured) VALUES
       (1, 'Ivory Floral Traditional Wool Rug', 'A beautiful ivory rug with floral patterns.', 111997.00, 278600.00, 60, 'SALE', '3x5', 'Traditional', 'Beige', 1),
       (2, 'Red Transitional Wool Rug', 'Vibrant red rug with a modern touch.', 97997.00, 245000.00, 60, 'NEW', '3x5', 'Transitional', 'Red', 1),
       (3, 'Multicolor Tribal Wool Runner', 'Classic tribal runner for long hallways.', 83997.00, 210000.00, 60, 'SALE', '3x5', 'Tribal', 'Multicolor', 1)
     `);
 
     await pool.query(`
-      INSERT INTO test.product_images (product_id, image_url, sort_order) VALUES
+      INSERT INTO product_images (product_id, image_url, sort_order) VALUES
       (1, 'https://images.pexels.com/photos/2724748/pexels-photo-2724748.jpeg', 0),
       (2, 'https://images.pexels.com/photos/10313592/pexels-photo-10313592.jpeg', 0),
       (3, 'https://images.pexels.com/photos/4553277/pexels-photo-4553277.jpeg', 0)
     `);
 
-    res.json({ ok: true, message: 'Database RESET and REFILLED in TEST folder! Refresh your shop page now.' });
+    // 3. X-RAY: List all tables found
+    const [tables] = await pool.query('SHOW TABLES');
+    const [dbName] = await pool.query('SELECT DATABASE() as db');
+
+    res.json({ 
+      ok: true, 
+      message: 'Database scan complete!',
+      current_database: dbName[0].db,
+      tables_found: tables.map(t => Object.values(t)[0])
+    });
   } catch (err) {
     console.error('Setup error:', err);
     res.status(500).json({ ok: false, error: err.message });
