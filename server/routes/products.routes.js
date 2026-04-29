@@ -5,10 +5,6 @@ async function ensureDatabaseReady() {
   try {
     const [tables] = await pool.query('SHOW TABLES');
     const tableList = tables.map(t => Object.values(t)[0].toLowerCase());
-    
-    // Expand check to all tables
-    const [tables] = await pool.query('SHOW TABLES');
-    const tableList = tables.map(t => Object.values(t)[0].toLowerCase());
     const requiredTables = ['products', 'product_images', 'users', 'orders', 'order_items', 'cart_items', 'wishlist_items'];
     const missingTables = requiredTables.filter(t => !tableList.includes(t));
 
