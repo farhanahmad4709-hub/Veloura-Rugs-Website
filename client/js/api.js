@@ -77,7 +77,7 @@ const VelouraAPI = {
   },
 
   isLoggedIn() {
-    return !!this.getToken();
+    return !!this.getToken() && !!this.getCurrentUser();
   },
 
   /* ─── PRODUCTS ─────────────────────────── */
