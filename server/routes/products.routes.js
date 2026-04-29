@@ -6,22 +6,21 @@ async function ensureDatabaseReady() {
     const [tables] = await pool.query('SHOW TABLES');
     const tableList = tables.map(t => Object.values(t)[0].toLowerCase());
     
-    // If the data is empty OR doesn't match the real schema, re-seed
+    // Check if we need to seed (If we have less than 25 rugs, it's not the real collection)
     let needsSeed = false;
     if (!tableList.includes('products')) {
       needsSeed = true;
     } else {
       const [count] = await pool.query('SELECT COUNT(*) as total FROM products');
-      if (count[0].total < 5) needsSeed = true; // Placeholder/Test data usually has few items
+      if (count[0].total < 25) needsSeed = true; 
     }
 
     if (needsSeed) {
-      console.log('🏗️ Restoring Original Rug Database...');
+      console.log('🏗️ FORCING Restoration of Original 30-Rug Collection...');
       await pool.query('SET FOREIGN_KEY_CHECKS = 0');
       await pool.query('DROP TABLE IF EXISTS product_images');
       await pool.query('DROP TABLE IF EXISTS products');
       
-      // CREATE PRODUCTS TABLE (Original Schema)
       await pool.query(`CREATE TABLE products (
           id              INT AUTO_INCREMENT PRIMARY KEY,
           name            VARCHAR(255) NOT NULL,
@@ -41,7 +40,6 @@ async function ensureDatabaseReady() {
           updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB`);
       
-      // CREATE PRODUCT_IMAGES TABLE (Original Schema)
       await pool.query(`CREATE TABLE product_images (
           id              INT AUTO_INCREMENT PRIMARY KEY,
           product_id      INT NOT NULL,
@@ -50,7 +48,7 @@ async function ensureDatabaseReady() {
           FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
       ) ENGINE=InnoDB`);
 
-      // SEED REAL PRODUCTS (Lines 10-39 from seed.sql)
+      // SEED ALL 30 AUTHENTIC PRODUCTS
       await pool.query(`INSERT INTO products (id, name, vendor, price, original_price, discount, badge, size, style, color, description, stock, featured) VALUES
         (1,'3×5 ft Ivory Floral Traditional Wool Rug','Veloura Rugs',111997,278600,60,'SALE','3x5','Traditional','Beige','A compact traditional wool rug with ivory and warm beige floral motifs.',5,TRUE),
         (2,'3×5 ft Red Transitional Wool Rug','Veloura Rugs',97997,245000,60,'NEW','3x5','Transitional','Red','A vibrant transitional rug in deep red and berry tones.',3,FALSE),
@@ -59,7 +57,7 @@ async function ensureDatabaseReady() {
         (5,'4×6 ft Blue Vintage Overdyed Wool Rug','Veloura Rugs',176397,441000,60,'SALE','4x6','Vintage','Blue','A compact vintage rug refreshed with saturated blue overdyed tones.',3,FALSE),
         (6,'4×6 ft Midnight Mamluk Wool Rug','Veloura Rugs',195997,490000,60,'SALE','4x6','Mamluk','Black','A luxurious Mamluk-style accent rug in deep black and ivory.',2,FALSE),
         (7,'5×8 ft Multicolor Kilim Flatweave Rug','Veloura Rugs',209997,525000,60,'SALE','5x8','Kilims','Multicolor','A joyful Kilim flatweave featuring bright geometric stripes.',4,FALSE),
-        (8,'5×8 ft Brown Tribal Wool Rug','Veloura Rugs',251997,629720,60,'SALE','5x8','Tribal','Brown','A warm brown tribal rug with layered motifs and artisanal handwork.',3,FALSE),
+        (8,'5×8 ft Brown Tribal Wool Rug','Veloura Rugs',2519997,629720,60,'SALE','5x8','Tribal','Brown','A warm brown tribal rug with layered motifs and artisanal handwork.',3,FALSE),
         (9,'5×8 ft Ivory Modern Abstract Rug','Veloura Rugs',307997,727720,60,'NEW','5x8','Modern','Beige','A refined modern rug in ivory and cream with soft abstract washes.',2,FALSE),
         (10,'6×9 ft Grey Transitional Hand Knotted Rug','Veloura Rugs',349997,875000,60,'SALE','6x9','Transitional','Grey','A soft grey transitional rug with painterly texture.',3,FALSE),
         (11,'6×9 ft Emerald Vintage Overdyed Rug','Veloura Rugs',335997,840000,60,'SALE','6x9','Vintage','Green','A heritage rug dyed in deep emerald green.',2,FALSE),
@@ -84,7 +82,7 @@ async function ensureDatabaseReady() {
         (30,'6×9 ft Gold Modern Accent Rug','Veloura Rugs',363997,910000,60,'SALE','6x9','Modern','Gold','A modern gold accent rug in soft painterly hues.',2,FALSE)
       `);
 
-      // SEED REAL IMAGES (Subset of seed.sql to ensure coverage)
+      // SEED AUTHENTIC IMAGES
       await pool.query(`INSERT INTO product_images (product_id, image_url, sort_order) VALUES
         (1,'https://images.pexels.com/photos/34135357/pexels-photo-34135357.jpeg?cs=srgb&fm=jpg',0),
         (2,'https://images.pexels.com/photos/30123749/pexels-photo-30123749.jpeg?cs=srgb&fm=jpg',0),
@@ -119,7 +117,7 @@ async function ensureDatabaseReady() {
       `);
       
       await pool.query('SET FOREIGN_KEY_CHECKS = 1');
-      console.log('✅ Real Collection Restored!');
+      console.log('✅ 30 Authentic Rugs Restored!');
     }
   } catch (err) {
     console.error('❌ Auto-Setup Failed:', err.message);
