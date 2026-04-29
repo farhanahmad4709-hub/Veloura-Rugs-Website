@@ -6,10 +6,13 @@
 <h3 align="center">✦ Artistry & History in Every Knot ✦</h3>
 
 <p align="center">
-  A premium, fully responsive e-commerce storefront for handcrafted heritage rugs — built with vanilla HTML, CSS & JavaScript.
+  A premium, fully responsive full-stack e-commerce storefront for handcrafted heritage rugs — built with Node.js, Express, MySQL, HTML, CSS & JavaScript.
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Express.js-404D59?style=for-the-badge" alt="Express" />
+  <img src="https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL" />
   <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
   <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
@@ -32,9 +35,9 @@
 
 ## 🏷️ About
 
-**Veloura Rugs** is a luxury e-commerce web application designed for selling hand-knotted, heritage rugs sourced from Persia, Turkey, Afghanistan, and Morocco. The site features a boutique-grade UI with rich animations, mega-menu navigation, advanced product filtering, and a complete shopping experience — all powered by pure client-side JavaScript with `localStorage` persistence.
+**Veloura Rugs** is a luxury e-commerce web application designed for selling hand-knotted, heritage rugs sourced from Persia, Turkey, Afghanistan, and Morocco. The site features a boutique-grade UI with rich animations, mega-menu navigation, advanced product filtering, and a complete shopping experience.
 
-> **Note:** This is a front-end-only project. No back-end server or database is required. All data (cart, wishlist, user accounts) is stored in the browser's `localStorage`.
+> **Note:** The project operates on a robust Node.js/Express backend connected to a TiDB MySQL Database. It features secure JWT authentication, a fully customized Admin Dashboard for inventory management, and database auto-healing logic for easy deployments.
 
 ---
 
@@ -60,28 +63,34 @@
 - **Dedicated Wishlist Page** — View and manage all wishlisted items
 - **Move to Cart** — Seamlessly move items from wishlist to cart
 
-### 🔐 Authentication System
-- **User Registration** — Sign up with name, email, and password
-- **User Login** — Login with email/password with "Remember Me" option
-- **Live Validation** — Real-time field validation with error/success indicators
+### 🔐 Secure Authentication System
+- **JWT Sessions** — Encrypted token-based authentication protecting admin routes and user checkout
+- **Password Hashing** — Secure bcryptjs hashing for all user accounts in the database
+- **User Registration & Login** — Sign up with name, email, and password
+- **Live Validation** — Real-time field validation with error/success indicators and duplicate email blocking
 - **Password Strength Meter** — Visual strength indicator (Weak → Very Strong)
-- **Show/Hide Password** — Toggle password visibility with eye icon
-- **Session Management** — Logged-in users see their name in the header with logout option
+
+### 📊 Admin Dashboard (New!)
+- **Secure Portal** — Dedicated `/admin` route strictly protected by JWT admin claims
+- **Data Visualization** — Real-time Chart.js graphs displaying revenue over time and order statuses
+- **Inventory Control** — Admins can view low-stock alerts, edit product pricing, and update inventory counts
+- **Order Management** — Track all customer orders, process shipping statuses, and export CSV reports
+
+### 🤖 Database Auto-Healing
+- **Dynamic Schema Upgrades** — Built-in startup script intelligently verifies and repairs database structures
+- **Zero-Touch Setup** — Automatically creates tables and seeds the initial 30 products on first boot
+- **Force Init Diagnostics** — Special API endpoints to forcefully heal missing columns on live cloud environments
 
 ### 🎨 Design & UX
 - **Fully Responsive** — Optimized for desktop, tablet, and mobile (480px – 1440px+)
 - **Premium Typography** — Cormorant Garamond (display) + Jost (body) from Google Fonts
 - **Animated Hero Section** — Zoom-out parallax effect with staggered fade-up animations
 - **Mega Menu Navigation** — Multi-column dropdown with size, style, and color categories
-- **Scrolling Marquee Bar** — Promotional offers ticker at the top and bottom
-- **Trust Bar** — Five trust indicators (shipping, returns, authenticity, delivery, consultation)
-- **Toast Notifications** — Elegant slide-in notifications for cart, wishlist, and form actions
-- **Smooth Hover Effects** — Image zoom on product cards and collection cards
-- **Newsletter Subscription** — Email capture form on every page
 
-### 💳 Checkout
+### 💳 Checkout & Database Orders
 - **Order Summary** — Itemized cart review with subtotal, tax, and total calculation
-- **Shipping Form** — Complete form with first/last name, email, address, city, state, ZIP, phone
+- **Database Processing** — Orders are securely inserted into MySQL, associating products and calculating totals
+- **Stock Validation** — Real-time database checks prevent purchasing items that are out of stock
 - **Order Confirmation** — Success toast with automatic redirect to homepage
 
 ---
@@ -90,12 +99,13 @@
 
 | Technology | Purpose |
 |:---|:---|
-| **HTML5** | Semantic structure and page layout |
-| **CSS3** | Styling, animations, responsive design (CSS custom properties) |
-| **Vanilla JavaScript** | All interactivity, state management, DOM manipulation |
-| **Google Fonts** | Cormorant Garamond & Jost typography |
-| **Pexels** | Product and hero imagery |
-| **localStorage** | Client-side data persistence (cart, wishlist, auth) |
+| **Node.js & Express** | Backend server, REST API routing, and request handling |
+| **MySQL (TiDB)** | Relational database storing products, users, and orders |
+| **JWT & bcryptjs** | Secure token-based authentication and password hashing |
+| **Vercel Serverless** | Cloud hosting platform with automated static and API routing |
+| **HTML5 & CSS3** | Semantic structure, styling, animations, responsive design |
+| **Vanilla JavaScript** | Front-end interactivity, DOM manipulation, and API integration |
+| **Chart.js** | Dynamic data visualization on the Admin Dashboard |
 
 ---
 
@@ -132,31 +142,42 @@ veloura-rugs/
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Any modern web browser (Chrome, Firefox, Safari, Edge)
-- No build tools, package managers, or servers required
+- Node.js (v18+)
+- MySQL compatible database (TiDB, MySQL 5.7+, MariaDB)
 
 ### Installation
 
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/your-username/veloura-rugs.git
-   ```
-
-2. **Navigate to the project folder:**
-   ```bash
    cd veloura-rugs
    ```
 
-3. **Open in browser:**
-   - Simply double-click `index.html`, **or**
-   - Use a live server extension (e.g., VS Code Live Server):
-     ```bash
-     # If using VS Code
-     code . 
-     # Then right-click index.html → "Open with Live Server"
-     ```
+2. **Install Server Dependencies:**
+   ```bash
+   npm install
+   ```
 
-> **Tip:** Using a local server avoids potential CORS issues with image loading.
+3. **Configure Environment Variables:**
+   Create a `.env` file in the root directory and add:
+   ```env
+   DB_HOST=your_database_host
+   DB_USER=your_database_user
+   DB_PASSWORD=your_database_password
+   DB_NAME=your_database_name
+   DB_PORT=4000
+   JWT_SECRET=your_super_secret_jwt_key
+   PORT=3000
+   ```
+
+4. **Run the Server:**
+   ```bash
+   npm run dev
+   # The built-in auto-healing script will automatically create your database tables and seed 30 products!
+   ```
+
+5. **Open in Browser:**
+   Navigate to `http://localhost:3000`
 
 ---
 

@@ -1,44 +1,51 @@
-# 🚀 Deploying Veloura Rugs to Render
+# 🚀 Deploying Veloura Rugs to Vercel
 
-Follow these steps to take your store live on Render.com.
+Follow these steps to take your full-stack Veloura Rugs storefront live on Vercel.
 
 ## 1. Prepare your GitHub Repository
 1. Push all your latest code to your GitHub repository.
 2. Make sure your `.gitignore` includes `.env` and `node_modules` (I've already set this up for you).
+3. Ensure the `vercel.json` file is present in the root directory (this handles all the complex routing between your API, client storefront, and admin portal).
 
 ## 2. Set Up a MySQL Database
-Render offers managed PostgreSQL, but for MySQL, you can use:
+Vercel is serverless, so you need an external MySQL database to store your products, users, and orders.
+*   **TiDB Cloud** (Free tier, highly recommended, serverless-friendly)
 *   **Aiven.io** (Free tier MySQL)
-*   **Railway.app** (Paid)
-*   **TiDB Cloud** (Free tier)
+*   **PlanetScale** (If using MySQL-compatible branch)
 
 Once you have your database:
 1. Copy the connection details (Host, Port, User, Password, Database Name).
-2. Run your `database/schema.sql` and `database/seed.sql` on the new database using a tool like MySQL Workbench or the provider's console.
+2. *Note:* You DO NOT need to manually run SQL scripts! Our built-in `db-init.js` auto-healing script will automatically create all tables and seed the 30 products the moment your server boots up!
 
-## 3. Create a new "Web Service" on Render
-1. Log in to [Render.com](https://render.com).
-2. Click **New +** > **Web Service**.
-3. Connect your GitHub repository.
-4. Set the following options:
-    *   **Name**: `veloura-rugs`
-    *   **Environment**: `Node`
-    *   **Build Command**: `npm install`
-    *   **Start Command**: `npm start`
-    *   **Plan**: `Free` (or higher)
+## 3. Create a new Project on Vercel
+1. Log in to [Vercel.com](https://vercel.com).
+2. Click **Add New...** > **Project**.
+3. Import your GitHub repository.
+4. Leave the Framework Preset as `Other`.
+5. *Important:* Expand the **Environment Variables** section.
 
 ## 4. Add Environment Variables
-In the Render dashboard, go to the **Environment** tab and add these variables:
-*   `PORT`: `10000` (Render will handle this automatically, but good to have)
-*   `DB_HOST`: *(Your live database host)*
-*   `DB_USER`: *(Your live database username)*
-*   `DB_PASSWORD`: *(Your live database password)*
-*   `DB_NAME`: *(Your live database name)*
-*   `JWT_SECRET`: *(A long random string, e.g., `veloura_secret_2024_secure`)*
+You MUST add these variables in the Vercel dashboard (Settings > Environment Variables) before you click Deploy.
+
+**Database Keys:**
+You get these directly from your database provider (like TiDB). Click "Connect" on your database dashboard to find them:
+*   `DB_HOST`: *(e.g., gateway01.us-east-1.prod.aws.tidbcloud.com)*
+*   `DB_USER`: *(e.g., 2a3b4c5d.root)*
+*   `DB_PASSWORD`: *(The password you created for the database)*
+*   `DB_NAME`: *(e.g., veloura)*
+*   `DB_PORT`: `4000` *(Usually 4000 for TiDB, or 3306 for standard MySQL)*
+
+**Security Keys:**
+You do not download this key—you make it up yourself! It acts as a master password for encrypting user logins.
+*   `JWT_SECRET`: *(Type any long, random, hard-to-guess string. e.g., `Veloura_Production_Secret_Key_9876!`)*
 
 ## 5. Deploy!
-Render will automatically start building and deploying your app. Once it finishes, it will give you a URL like `https://veloura-rugs.onrender.com`.
+Click **Deploy**. Vercel will automatically read the `vercel.json` file, build the Node.js Express serverless functions, and host the static files.
+
+Once it finishes, you will be given a live URL (e.g., `https://veloura-rugs-website.vercel.app`).
 
 ---
-### **Important Note**
-Since I've updated the code to use relative paths (`/api`), your storefront and admin panel will work perfectly as soon as the site is live!
+### **Diagnostic Tools (Post-Deployment)**
+If you encounter any database errors after deployment, you can use these secret links:
+*   `https://[your-vercel-url]/api/test/force-init` - Forcefully triggers the database self-healing script to create missing columns.
+*   `https://[your-vercel-url]/api/test/create-admin` - Instantly generates the `admin@veloura.com` / `admin123` account so you can log into the `/admin` portal.

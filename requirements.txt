@@ -1,0 +1,29 @@
+# Veloura Rugs - Production Requirements
+# This file outlines the system, environment, and library dependencies required to run the Veloura Rugs application.
+
+## System Requirements
+- Node.js (v18.0.0 or higher)
+- npm (Node Package Manager, v9.0.0 or higher)
+- MySQL Compatible Database (TiDB, MySQL 5.7+, or MariaDB)
+
+## Core Dependencies (Node.js)
+express==4.18.2          # Web server framework
+cors==2.8.5              # Cross-Origin Resource Sharing middleware
+dotenv==16.4.5           # Environment variable management
+mysql2==3.9.2            # High-performance MySQL database driver
+bcryptjs==2.4.3          # Secure password hashing
+jsonwebtoken==9.0.2      # JWT for secure user and admin authentication
+
+## Development & Deployment
+- Vercel CLI (for serverless deployment)
+- @vercel/node (for compiling Express API)
+- @vercel/static (for routing static client/admin files)
+
+## Environment Variables Required (.env)
+DB_HOST=your_database_host
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
+DB_NAME=your_database_name
+DB_PORT=4000
+JWT_SECRET=your_super_secret_jwt_key
+PORT=3000
