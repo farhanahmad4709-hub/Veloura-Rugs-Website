@@ -86,4 +86,27 @@ router.post('/debug-checkout', async (req, res) => {
   }
 });
 
+router.get('/fix-db', async (req, res) => {
+  try {
+    const { pool } = require('../config/db');
+    const errors = [];
+    const sqls = [
+      `ALTER TABLE products ADD COLUMN stock INT DEFAULT 100`,
+      `ALTER TABLE orders ADD COLUMN discount_amount DECIMAL(12,2) DEFAULT 0.00`,
+      `ALTER TABLE orders ADD COLUMN shipping_fee DECIMAL(12,2) DEFAULT 0.00`,
+      `ALTER TABLE orders ADD COLUMN notes TEXT`
+    ];
+    for (const sql of sqls) {
+      try {
+        await pool.query(sql);
+      } catch (err) {
+        errors.push({ sql, error: err.message });
+      }
+    }
+    res.json({ ok: true, message: 'Fix DB script ran', errors });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 module.exports = router;

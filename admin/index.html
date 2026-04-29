@@ -26,7 +26,7 @@
   <script>
     // If already logged in, redirect
     if (localStorage.getItem('veloura_admin_token')) {
-      window.location.href = 'dashboard.html';
+      window.location.href = '/admin/dashboard.html';
     }
 
     async function handleLogin(e) {
@@ -46,7 +46,7 @@
         if (res.ok && data.user && data.user.role === 'admin') {
           localStorage.setItem('veloura_admin_token', data.token);
           localStorage.setItem('veloura_admin_user', JSON.stringify(data.user));
-          window.location.href = 'dashboard.html';
+          window.location.href = '/admin/dashboard.html';
         } else if (res.ok && data.user && data.user.role !== 'admin') {
           errorMsg.textContent = 'Access denied. Admin privileges required.';
         } else {
