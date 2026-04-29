@@ -12,7 +12,10 @@ function showToast(message, icon = '✓', cls = '') {
   }
   const toast = document.createElement('div');
   toast.className = `toast ${cls}`;
-  toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+  // Safety check: ensure icon and message are not undefined
+  const iconSafe = icon || '✓';
+  const msgSafe = message || 'Action completed';
+  toast.innerHTML = `<span>${iconSafe}</span><span>${msgSafe}</span>`;
   container.appendChild(toast);
   setTimeout(() => {
     toast.classList.add('toast-out');
@@ -93,6 +96,15 @@ function closeQuickView() {
   document.body.style.overflow = '';
 }
 
+/* ─── RENDER PRODUCT CARD ────────────────────────────────────── */
+function renderProductCard(product) {
+  const wishlisted = Wishlist.isWishlisted(product.id);
+  const badgeCls = product.badge === 'NEW' ? 'product-badge badge-new' : 'product-badge';
+  const primaryImg = product.images?.[0] || '';
+  const productPrice = product.price || 0;
+  const originalPrice = product.original_price || product.originalPrice || productPrice;
+
+  return `
 /* ─── RENDER PRODUCT CARD ────────────────────────────────────── */
 function renderProductCard(product) {
   const wishlisted = Wishlist.isWishlisted(product.id);

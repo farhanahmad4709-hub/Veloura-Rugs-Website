@@ -91,7 +91,7 @@ function renderProductCard(product) {
     
     return `
       <div class="product-card" data-product='${productJson}'>
-        <div class="product-image">
+        <div class="product-img">
           ${badgeHtml}
           <img src="${primaryImg}" alt="${name}" loading="lazy" onerror="this.src='image/placeholder.jpg'">
           <div class="product-actions">
@@ -103,11 +103,11 @@ function renderProductCard(product) {
             </button>
           </div>
         </div>
-        <div class="product-info">
+        <div class="product-body">
           <p class="product-vendor">${vendor}</p>
-          <h3 class="product-title"><a href="product.html?id=${product.id}">${name}</a></h3>
+          <h3 class="product-name"><a href="product.html?id=${product.id}">${name}</a></h3>
           <div class="product-price">
-            <span class="price-current">${currentPrice}</span>
+            <span class="price-sale">${currentPrice}</span>
             ${priceOrigHtml}
           </div>
         </div>
