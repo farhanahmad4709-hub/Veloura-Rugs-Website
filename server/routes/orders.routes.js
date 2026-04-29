@@ -68,7 +68,7 @@ router.post('/', async (req, res) => {
   } catch (err) {
     await conn.rollback();
     console.error('Order error:', err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error: ' + err.message });
   } finally {
     conn.release();
   }
