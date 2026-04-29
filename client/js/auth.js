@@ -57,7 +57,7 @@ async function registerUser() {
     clearTimeout(safetyTimeout);
     if (res.ok) {
       showToast('Account created! Sign in now.', '✓', 'toast-gold');
-      setTimeout(() => window.location.href = 'login.html', 1500);
+      setTimeout(() => window.location.replace('login.html'), 1000);
     } else {
       showToast(res.data?.error || 'Registration failed', '✕', 'toast-error');
       btn.disabled = false;
@@ -104,8 +104,12 @@ async function loginUser() {
     const res = await VelouraAPI.login(email, password);
     clearTimeout(safetyTimeout);
     if (res.ok && res.data?.user) {
+      // Force immediate redirect as fallback if toast fails
+      const redirect = () => window.location.replace('index.html');
       showToast(`Welcome back, ${res.data.user.name.split(' ')[0]}!`, '✓', 'toast-gold');
-      setTimeout(() => window.location.href = 'index.html', 1200);
+      setTimeout(redirect, 800);
+      // Extra safety: if still on page after 2s, force it
+      setTimeout(redirect, 2500);
     } else {
       showToast(res.data?.error || 'Login failed - unexpected response', '✕', 'toast-error');
       btn.disabled = false;
