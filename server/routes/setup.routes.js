@@ -5,21 +5,22 @@ router.get('/', async (req, res) => {
   try {
     console.log('🚀 Starting Database Setup...');
 
-    // 1. Create Tables
+    // 1. Create Tables with PERFECT column names
     await pool.query(`
       CREATE TABLE IF NOT EXISTS products (
         id INT PRIMARY KEY AUTO_INCREMENT,
         name VARCHAR(255),
+        description TEXT,
         price DECIMAL(10,2),
         original_price DECIMAL(10,2),
         discount_pct INT,
         badge VARCHAR(20),
-        size_category VARCHAR(20),
+        size VARCHAR(20),
         style VARCHAR(50),
-        color_family VARCHAR(50),
+        color VARCHAR(50),
         stock_count INT DEFAULT 10,
         is_active TINYINT DEFAULT 1,
-        featured TINYINT DEFAULT 0
+        featured TINYINT DEFAULT 1
       )
     `);
 
@@ -37,10 +38,10 @@ router.get('/', async (req, res) => {
     await pool.query('DELETE FROM products');
 
     await pool.query(`
-      INSERT INTO products (name, price, original_price, discount_pct, badge, size_category, style, color_family, featured) VALUES
-      ('Ivory Floral Traditional Wool Rug', 111997.00, 278600.00, 60, 'SALE', '3x5', 'Traditional', 'Beige', 1),
-      ('Red Transitional Wool Rug', 97997.00, 245000.00, 60, 'NEW', '3x5', 'Transitional', 'Red', 1),
-      ('Multicolor Tribal Wool Runner', 83997.00, 210000.00, 60, 'SALE', '3x5', 'Tribal', 'Multicolor', 1)
+      INSERT INTO products (name, description, price, original_price, discount_pct, badge, size, style, color, featured) VALUES
+      ('Ivory Floral Traditional Wool Rug', 'A beautiful ivory rug with floral patterns.', 111997.00, 278600.00, 60, 'SALE', '3x5', 'Traditional', 'Beige', 1),
+      ('Red Transitional Wool Rug', 'Vibrant red rug with a modern touch.', 97997.00, 245000.00, 60, 'NEW', '3x5', 'Transitional', 'Red', 1),
+      ('Multicolor Tribal Wool Runner', 'Classic tribal runner for long hallways.', 83997.00, 210000.00, 60, 'SALE', '3x5', 'Tribal', 'Multicolor', 1)
     `);
 
     await pool.query(`
@@ -50,7 +51,7 @@ router.get('/', async (req, res) => {
       (3, 'https://images.pexels.com/photos/4553277/pexels-photo-4553277.jpeg', 0)
     `);
 
-    res.json({ ok: true, message: 'Database setup successfully with 3 sample rugs!' });
+    res.json({ ok: true, message: 'Database setup perfectly! Refresh your shop page now.' });
   } catch (err) {
     console.error('Setup error:', err);
     res.status(500).json({ ok: false, error: err.message });
