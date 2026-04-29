@@ -75,18 +75,7 @@ app.get('*splat', (req, res) => {
 });
 
 /* ─── START SERVER ───────────────────────── */
-// Background Auto-Setup (Asynchronous)
-if (process.env.NODE_ENV === 'production') {
-  (async () => {
-    try {
-      const { pool } = require('./config/db');
-      await pool.query(`CREATE TABLE IF NOT EXISTS products (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), price DECIMAL(10,2), vendor VARCHAR(255), image_urls TEXT, is_active TINYINT DEFAULT 1, style VARCHAR(50))`);
-      console.log("✅ DB Auto-Setup Complete");
-    } catch (err) {
-      console.error("❌ DB Auto-Setup Failed:", err.message);
-    }
-  })();
-}
+// Background Auto-Setup has been moved to utils/db-init.js
 
 // Start local server only if run directly
 if (require.main === module) {

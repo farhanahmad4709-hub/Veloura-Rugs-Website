@@ -22,7 +22,7 @@ async function ensureDatabaseReady(req, res, next) {
     const [tables] = await pool.query('SHOW TABLES');
     const tableList = tables.map(t => Object.values(t)[0].toLowerCase());
     
-    const requiredTables = ['products', 'users', 'orders', 'order_items', 'cart_items', 'wishlist_items'];
+    const requiredTables = ['products', 'users', 'orders', 'order_items', 'cart_items', 'wishlist_items', 'product_images'];
     const missingTables = requiredTables.filter(t => !tableList.includes(t));
 
     if (missingTables.length > 0) {
