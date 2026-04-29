@@ -3,17 +3,14 @@ const { pool } = require('../config/db');
 
 router.get('/', async (req, res) => {
   try {
-    console.log('🚀 Starting Database Setup...');
+    console.log('🚀 Starting Explicit Database Setup...');
 
-    // 1. Reset Tables (Truncate resets the IDs to 1)
+    // Use 'test.' prefix everywhere to be 1000% sure
     await pool.query('SET FOREIGN_KEY_CHECKS = 0');
-    await pool.query('TRUNCATE TABLE product_images');
-    await pool.query('TRUNCATE TABLE products');
-    await pool.query('SET FOREIGN_KEY_CHECKS = 1');
 
-    // 2. Create Tables if they don't exist
+    // 1. Create Tables in the 'test' database explicitly
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS products (
+      CREATE TABLE IF NOT EXISTS test.products (
         id INT PRIMARY KEY AUTO_INCREMENT,
         name VARCHAR(255),
         description TEXT,
@@ -31,7 +28,7 @@ router.get('/', async (req, res) => {
     `);
 
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS product_images (
+      CREATE TABLE IF NOT EXISTS test.product_images (
         id INT PRIMARY KEY AUTO_INCREMENT,
         product_id INT,
         image_url TEXT,
@@ -39,22 +36,26 @@ router.get('/', async (req, res) => {
       )
     `);
 
-    // 3. Insert Sample Data (IDs will now definitely be 1, 2, 3)
+    // 2. Reset and Refill
+    await pool.query('TRUNCATE TABLE test.product_images');
+    await pool.query('TRUNCATE TABLE test.products');
+    await pool.query('SET FOREIGN_KEY_CHECKS = 1');
+
     await pool.query(`
-      INSERT INTO products (id, name, description, price, original_price, discount_pct, badge, size, style, color, featured) VALUES
+      INSERT INTO test.products (id, name, description, price, original_price, discount_pct, badge, size, style, color, featured) VALUES
       (1, 'Ivory Floral Traditional Wool Rug', 'A beautiful ivory rug with floral patterns.', 111997.00, 278600.00, 60, 'SALE', '3x5', 'Traditional', 'Beige', 1),
       (2, 'Red Transitional Wool Rug', 'Vibrant red rug with a modern touch.', 97997.00, 245000.00, 60, 'NEW', '3x5', 'Transitional', 'Red', 1),
       (3, 'Multicolor Tribal Wool Runner', 'Classic tribal runner for long hallways.', 83997.00, 210000.00, 60, 'SALE', '3x5', 'Tribal', 'Multicolor', 1)
     `);
 
     await pool.query(`
-      INSERT INTO product_images (product_id, image_url, sort_order) VALUES
+      INSERT INTO test.product_images (product_id, image_url, sort_order) VALUES
       (1, 'https://images.pexels.com/photos/2724748/pexels-photo-2724748.jpeg', 0),
       (2, 'https://images.pexels.com/photos/10313592/pexels-photo-10313592.jpeg', 0),
       (3, 'https://images.pexels.com/photos/4553277/pexels-photo-4553277.jpeg', 0)
     `);
 
-    res.json({ ok: true, message: 'Database RESET and REFILLED! Refresh your shop page now.' });
+    res.json({ ok: true, message: 'Database RESET and REFILLED in TEST folder! Refresh your shop page now.' });
   } catch (err) {
     console.error('Setup error:', err);
     res.status(500).json({ ok: false, error: err.message });
