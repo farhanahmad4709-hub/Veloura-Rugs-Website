@@ -46,9 +46,9 @@ router.post('/', async (req, res) => {
         shipping_name, shipping_email, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_zip,
         payment_method, notes)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [req.user.id, order_number, subtotal, discount_amount, shipping_fee, total,
-        shipping?.name, shipping?.email, shipping?.phone, shipping?.address,
-        shipping?.city, shipping?.state, shipping?.zip, payment_method, notes]
+      [req.user.id, order_number, subtotal, discount_amount || 0, shipping_fee || 0, total,
+        shipping?.name || null, shipping?.email || null, shipping?.phone || null, shipping?.address || null,
+        shipping?.city || null, shipping?.state || null, shipping?.zip || null, payment_method || 'Card', notes || null]
     );
 
     // Insert order items and decrement stock
