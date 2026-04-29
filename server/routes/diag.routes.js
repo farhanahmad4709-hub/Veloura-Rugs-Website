@@ -35,8 +35,9 @@ router.get('/diag', async (req, res) => {
 
 router.get('/force-init', async (req, res) => {
   try {
-    const ensureDatabaseReady = require('../utils/db-init');
-    await ensureDatabaseReady();
+    const { ensureDatabaseReady } = require('../utils/db-init');
+    // Mock req, res, next since it's designed as middleware
+    await ensureDatabaseReady({ path: '' }, {}, () => {});
     res.json({ ok: true, message: 'Database forcefully initialized and healed!' });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
