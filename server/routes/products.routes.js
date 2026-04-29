@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     if (size) { sql += ' AND p.size = ?'; params.push(size); }
     if (color) { sql += ' AND p.color = ?'; params.push(color); }
     if (featured === 'true') { sql += ' AND p.featured = 1'; }
-    if (search) { sql += ' AND (p.name LIKE ? OR p.description LIKE ?)'; params.push(`%${search}%`, `%${search}%`); }
+    if (search) { sql += ' AND (p.name LIKE ? OR p.style LIKE ? OR p.color LIKE ?)'; params.push(`%${search}%`, `%${search}%`, `%${search}%`); }
 
     if (sort === 'price-asc') sql += ' ORDER BY p.price ASC';
     else if (sort === 'price-desc') sql += ' ORDER BY p.price DESC';

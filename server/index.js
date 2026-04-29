@@ -45,6 +45,7 @@ app.use('/api/cart', require('./routes/cart.routes'));
 app.use('/api/wishlist', require('./routes/wishlist.routes'));
 app.use('/api/orders', require('./routes/orders.routes'));
 app.use('/api/admin', require('./routes/admin.routes'));
+app.use('/api/test', require('./routes/diag.routes'));
 
 // Magic Setup Route (Direct in Index for safety)
 app.get('/api/setup', async (req, res) => {
