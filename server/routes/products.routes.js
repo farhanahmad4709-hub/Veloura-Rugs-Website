@@ -6,9 +6,14 @@ async function ensureDatabaseReady() {
     const [tables] = await pool.query('SHOW TABLES');
     const tableList = tables.map(t => Object.values(t)[0].toLowerCase());
     
-    // Check if we need to seed (If we have less than 25 rugs, it's not the real collection)
+    // Expand check to all tables
+    const [tables] = await pool.query('SHOW TABLES');
+    const tableList = tables.map(t => Object.values(t)[0].toLowerCase());
+    const requiredTables = ['products', 'product_images', 'users', 'orders', 'order_items', 'cart_items', 'wishlist_items'];
+    const missingTables = requiredTables.filter(t => !tableList.includes(t));
+
     let needsSeed = false;
-    if (!tableList.includes('products')) {
+    if (missingTables.length > 0) {
       needsSeed = true;
     } else {
       const [count] = await pool.query('SELECT COUNT(*) as total FROM products');
@@ -18,9 +23,26 @@ async function ensureDatabaseReady() {
     if (needsSeed) {
       console.log('🏗️ FORCING Restoration of Original 30-Rug Collection...');
       await pool.query('SET FOREIGN_KEY_CHECKS = 0');
+      await pool.query('DROP TABLE IF EXISTS wishlist_items');
+      await pool.query('DROP TABLE IF EXISTS cart_items');
+      await pool.query('DROP TABLE IF EXISTS order_items');
+      await pool.query('DROP TABLE IF EXISTS orders');
       await pool.query('DROP TABLE IF EXISTS product_images');
       await pool.query('DROP TABLE IF EXISTS products');
+      await pool.query('DROP TABLE IF EXISTS users');
       
+      await pool.query(`CREATE TABLE users (
+          id              INT AUTO_INCREMENT PRIMARY KEY,
+          name            VARCHAR(100) NOT NULL,
+          email           VARCHAR(255) NOT NULL UNIQUE,
+          password_hash   VARCHAR(255) NOT NULL,
+          role            ENUM('customer', 'admin') DEFAULT 'customer',
+          phone           VARCHAR(20),
+          address         TEXT,
+          created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB`);
+
       await pool.query(`CREATE TABLE products (
           id              INT AUTO_INCREMENT PRIMARY KEY,
           name            VARCHAR(255) NOT NULL,
@@ -45,6 +67,56 @@ async function ensureDatabaseReady() {
           product_id      INT NOT NULL,
           image_url       VARCHAR(500) NOT NULL,
           sort_order      INT DEFAULT 0,
+          FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB`);
+
+      await pool.query(`CREATE TABLE orders (
+          id              INT AUTO_INCREMENT PRIMARY KEY,
+          user_id         INT,
+          order_number    VARCHAR(20) UNIQUE NOT NULL,
+          status          ENUM('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+          subtotal        DECIMAL(12,2) NOT NULL,
+          total           DECIMAL(12,2) NOT NULL,
+          shipping_name   VARCHAR(100),
+          shipping_email  VARCHAR(255),
+          shipping_phone  VARCHAR(20),
+          shipping_address TEXT,
+          shipping_city   VARCHAR(100),
+          shipping_state  VARCHAR(100),
+          shipping_zip    VARCHAR(20),
+          payment_method  VARCHAR(50),
+          created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+      ) ENGINE=InnoDB`);
+
+      await pool.query(`CREATE TABLE order_items (
+          id              INT AUTO_INCREMENT PRIMARY KEY,
+          order_id        INT NOT NULL,
+          product_id      INT NOT NULL,
+          quantity        INT NOT NULL DEFAULT 1,
+          price_at_time   DECIMAL(12,2) NOT NULL,
+          FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+          FOREIGN KEY (product_id) REFERENCES products(id)
+      ) ENGINE=InnoDB`);
+
+      await pool.query(`CREATE TABLE cart_items (
+          id              INT AUTO_INCREMENT PRIMARY KEY,
+          user_id         INT NOT NULL,
+          product_id      INT NOT NULL,
+          quantity        INT NOT NULL DEFAULT 1,
+          added_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE KEY unique_cart_item (user_id, product_id),
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+          FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB`);
+
+      await pool.query(`CREATE TABLE wishlist_items (
+          id              INT AUTO_INCREMENT PRIMARY KEY,
+          user_id         INT NOT NULL,
+          product_id      INT NOT NULL,
+          added_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE KEY unique_wishlist_item (user_id, product_id),
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
           FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
       ) ENGINE=InnoDB`);
 
