@@ -74,11 +74,11 @@ async function loginUser() {
   btn.textContent = 'Signing In...';
 
   const res = await VelouraAPI.login(email, password);
-  if (res.ok) {
+  if (res.ok && res.data?.user) {
     showToast(`Welcome back, ${res.data.user.name.split(' ')[0]}!`, '✓', 'toast-gold');
     setTimeout(() => window.location.href = 'index.html', 1200);
   } else {
-    showToast(res.data?.error || 'Login failed', '✕', 'toast-error');
+    showToast(res.data?.error || 'Login failed - unexpected response', '✕', 'toast-error');
     btn.disabled = false;
     btn.textContent = 'Sign In';
   }

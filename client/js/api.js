@@ -56,7 +56,7 @@ const VelouraAPI = {
       method: 'POST',
       body: JSON.stringify({ email, password })
     });
-    if (res.ok && res.data && res.data.token) {
+    if (res.ok && res.data && res.data.token && res.data.user) {
       this.setToken(res.data.token);
       localStorage.setItem('veloura_current_user', JSON.stringify(res.data.user));
     }

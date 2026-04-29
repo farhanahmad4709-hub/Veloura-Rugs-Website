@@ -11,10 +11,13 @@ const { testConnection } = require('./config/db');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const { ensureDatabaseReady } = require('./utils/db-init');
+
 /* ─── MIDDLEWARE ──────────────────────────── */
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(ensureDatabaseReady);
 
 /* ─── API ROUTES ─────────────────────────── */
 app.use('/api/auth', require('./routes/auth.routes'));

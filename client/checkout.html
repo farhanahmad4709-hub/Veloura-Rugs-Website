@@ -380,10 +380,10 @@
         const res = await VelouraAPI.createOrder(orderData);
         if (res.ok) {
           showToast('Order placed successfully! Thank you for shopping with Veloura Rugs.', '🎉', 'toast-gold');
-          Cart.clear();
+          if (window.Cart) Cart.clear();
           setTimeout(() => window.location.href = 'index.html', 2000);
         } else {
-          showToast(res.data?.error || 'Failed to place order. Please try again.', '❌', 'toast-error');
+          showToast(res.data?.error || 'Failed to place order. Please try again.', '✕', 'toast-error');
           btn.disabled = false;
           btn.textContent = 'Place Order';
         }
