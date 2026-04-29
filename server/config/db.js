@@ -1,47 +1,33 @@
-/* ═══════════════════════════════════════════
-   MYSQL CONNECTION POOL
-   ═══════════════════════════════════════════ */
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-console.log(`🔌 Attempting DB Connection to: ${process.env.DB_HOST} on port ${process.env.DB_PORT}`);
-
-console.log("🔍 Checking Environment Variables...");
-if (process.env.DATABASE_URL) {
-  console.log(`✅ DATABASE_URL found (Length: ${process.env.DATABASE_URL.length})`);
-} else {
-  console.warn("⚠️ DATABASE_URL IS MISSING! Falling back to individual vars.");
-}
+// Log connection attempt (X-Ray Vision)
+console.log('🔌 Attempting DB Connection...');
 
 const poolConfig = process.env.DATABASE_URL 
-  ? { uri: process.env.DATABASE_URL }
+  ? { 
+      uri: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false } // Required for some cloud providers
+    }
   : {
-      host: process.env.DB_HOST || 'localhost',
+      host: process.env.DB_HOST || '127.0.0.1',
       user: process.env.DB_USER || 'root',
       password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'defaultdb',
-      port: parseInt(process.env.DB_PORT) || 3306,
+      database: process.env.DB_NAME || 'test',
+      port: process.env.DB_PORT || 3306,
+      ssl: { rejectUnauthorized: false }
     };
 
-const pool = mysql.createPool({
-  ...poolConfig,
-  ssl: { rejectUnauthorized: false },
-  waitForConnections: true,
-  connectionLimit: 5,
-  connectTimeout: 15000 
-});
+const pool = mysql.createPool(poolConfig);
 
-console.log(`📡 DB Mode: ${process.env.DATABASE_URL ? 'URL' : 'Manual'}`);
-
-// Test connection
-async function testConnection() {
-  try {
-    const conn = await pool.getConnection();
-    console.log('✅ DB Connected');
+// Test the connection immediately
+pool.getConnection()
+  .then(conn => {
+    console.log('✅ DATABASE CONNECTED SUCCESSFULLY');
     conn.release();
-  } catch (err) {
-    console.error('❌ DB Fail:', err.message);
-  }
-}
+  })
+  .catch(err => {
+    console.error('❌ DATABASE CONNECTION FAILED:', err.message);
+  });
 
-module.exports = { pool, testConnection };
+module.exports = { pool };
